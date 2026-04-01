@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manager Dashboard — WorkHive</title>
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Same design tokens as admin — reused for consistency */
+      :root {
+        --font-display: "Cabinet Grotesk", sans-serif;
+        --font-body: "Inter", sans-serif;
+        --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+        --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+        --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+        --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+        --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+        --sp1: 0.25rem;
+        --sp2: 0.5rem;
+        --sp3: 0.75rem;
+        --sp4: 1rem;
+        --sp5: 1.25rem;
+        --sp6: 1.5rem;
+        --sp8: 2rem;
+        --sp10: 2.5rem;
+        --sp12: 3rem;
+        --r-sm: 0.375rem;
+        --r-md: 0.5rem;
+        --r-lg: 0.75rem;
+        --r-xl: 1rem;
+        --r-full: 9999px;
+        --tr: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      :root,
+      [data-theme="light"] {
+        --bg: #f7f6f2;
+        --surf: #f9f8f5;
+        --surf2: #fbfbf9;
+        --surfoff: #f3f0ec;
+        --div: #dcd9d5;
+        --bdr: #d4d1ca;
+        --txt: #28251d;
+        --txtm: #7a7974;
+        --txtf: #bab9b4;
+        --txti: #f9f8f4;
+        --pr: #01696f;
+        --prh: #0c4e54;
+        --prhi: #cedcd8;
+        --err: #a12c7b;
+        --suc: #437a22;
+        --warn: #964219;
+        --shsm: 0 1px 2px oklch(0.2 0.01 80/0.06);
+        --shmd: 0 4px 12px oklch(0.2 0.01 80/0.08);
+        --shlg: 0 12px 32px oklch(0.2 0.01 80/0.12);
+      }
+      [data-theme="dark"] {
+        --bg: #171614;
+        --surf: #1c1b19;
+        --surf2: #201f1d;
+        --surfoff: #1d1c1a;
+        --div: #262523;
+        --bdr: #393836;
+        --txt: #cdccca;
+        --txtm: #797876;
+        --txtf: #5a5957;
+        --txti: #2b2a28;
+        --pr: #4f98a3;
+        --prh: #227f8b;
+        --prhi: #313b3b;
+        --err: #d163a7;
+        --suc: #6daa45;
+        --warn: #bb653b;
+        --shsm: 0 1px 2px oklch(0 0 0/0.2);
+        --shmd: 0 4px 12px oklch(0 0 0/0.3);
+        --shlg: 0 12px 32px oklch(0 0 0/0.4);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
+        color: var(--txt);
+        background: var(--bg);
+        display: flex;
+        height: 100dvh;
+        overflow: hidden;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-display);
+        line-height: 1.2;
+      }
+      button,
+      a {
+        transition:
+          color var(--tr),
+          background var(--tr),
+          border-color var(--tr);
+        cursor: pointer;
+      }
+      button {
+        border: none;
+        background: none;
+        font: inherit;
+        color: inherit;
+      }
+      .sidebar {
+        width: 240px;
+        min-width: 240px;
+        background: var(--surf);
+        border-right: 1px solid var(--div);
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+      }
+      .sb-logo {
+        display: flex;
+        align-items: center;
+        gap: var(--sp2);
+        padding: var(--sp6) var(--sp5);
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: var(--text-base);
+        color: var(--txt);
+        text-decoration: none;
+        border-bottom: 1px solid var(--div);
+      }
+      .sb-section {
+        padding: var(--sp4) var(--sp3);
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--txtf);
+        margin-top: var(--sp4);
+      }
+      .sb-item {
+        display: flex;
+        align-items: center;
+        gap: var(--sp3);
+        padding: var(--sp2) var(--sp4);
+        border-radius: var(--r-lg);
+        margin: 0 var(--sp2);
+        font-size: var(--text-sm);
+        color: var(--txtm);
+        text-decoration: none;
+      }
+      .sb-item:hover,
+      .sb-item.active {
+        background: var(--surfoff);
+        color: var(--txt);
+      }
+      .sb-item.active {
+        color: var(--pr);
+        font-weight: 600;
+      }
+      .sb-item svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      .sb-bottom {
+        margin-top: auto;
+        padding: var(--sp4);
+        border-top: 1px solid var(--div);
+      }
+      .sb-user {
+        display: flex;
+        align-items: center;
+        gap: var(--sp3);
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--prhi);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--pr);
+        flex-shrink: 0;
+      }
+      .user-name {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--txt);
+      }
+      .user-role {
+        font-size: var(--text-xs);
+        color: var(--txtm);
+        text-transform: capitalize;
+      }
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--sp4) var(--sp8);
+        border-bottom: 1px solid var(--div);
+        background: var(--surf);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .page-title {
+        font-size: var(--text-lg);
+        font-weight: 800;
+      }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: var(--sp3);
+      }
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--r-md);
+        border: 1px solid var(--bdr);
+        color: var(--txtm);
+      }
+      .icon-btn:hover {
+        background: var(--surfoff);
+      }
+      .content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: var(--sp8);
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr));
+        gap: var(--sp5);
+        margin-bottom: var(--sp8);
+      }
+      .kpi {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r-xl);
+        padding: var(--sp6);
+      }
+      .kpi-label {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--txtm);
+        margin-bottom: var(--sp2);
+      }
+      .kpi-val {
+        font-size: var(--text-xl);
+        font-weight: 800;
+        font-family: var(--font-display);
+        font-variant-numeric: tabular-nums;
+      }
+      .kpi-sub {
+        font-size: var(--text-xs);
+        color: var(--txtm);
+        margin-top: var(--sp1);
+      }
+      .section {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r-xl);
+        margin-bottom: var(--sp6);
+      }
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--sp5) var(--sp6);
+        border-bottom: 1px solid var(--div);
+      }
+      .section-head h2 {
+        font-size: var(--text-base);
+        font-weight: 700;
+      }
+      .btn-sm {
+        padding: var(--sp1) var(--sp4);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        border-radius: var(--r-md);
+        background: var(--pr);
+        color: var(--txti);
+        border: none;
+      }
+      .btn-sm:hover {
+        background: var(--prh);
+      }
+      .btn-sm.ghost {
+        background: transparent;
+        color: var(--txtm);
+        border: 1px solid var(--bdr);
+      }
+      .btn-sm.ghost:hover {
+        background: var(--surfoff);
+        color: var(--txt);
+      }
+      .tbl-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th {
+        padding: var(--sp3) var(--sp4);
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--txtm);
+        border-bottom: 1px solid var(--div);
+      }
+      td {
+        padding: var(--sp3) var(--sp4);
+        font-size: var(--text-sm);
+        border-bottom: 1px solid var(--div);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--surfoff);
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: var(--r-full);
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .badge-completed {
+        background: oklch(from var(--pr) l c h/.15);
+        color: var(--pr);
+      }
+      .badge-in_progress {
+        background: oklch(from var(--warn) l c h/.15);
+        color: var(--warn);
+      }
+      .badge-pending {
+        background: oklch(from var(--txtm) l c h/.12);
+        color: var(--txtm);
+      }
+      .badge-high {
+        background: oklch(from var(--err) l c h/.12);
+        color: var(--err);
+      }
+      .badge-critical {
+        background: oklch(from var(--err) l c h/.2);
+        color: var(--err);
+      }
+      .badge-medium {
+        background: oklch(from var(--warn) l c h/.12);
+        color: var(--warn);
+      }
+      .badge-low {
+        background: oklch(from var(--txtm) l c h/.1);
+        color: var(--txtm);
+      }
+      .badge-open {
+        background: oklch(from var(--warn) l c h/.12);
+        color: var(--warn);
+      }
+      .badge-resolved {
+        background: oklch(from var(--pr) l c h/.12);
+        color: var(--pr);
+      }
+      .prog-wrap {
+        background: var(--surfoff);
+        border-radius: var(--r-full);
+        height: 6px;
+        overflow: hidden;
+      }
+      .prog-bar {
+        height: 100%;
+        background: var(--pr);
+        border-radius: var(--r-full);
+      }
+      .chart-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp6);
+        margin-bottom: var(--sp6);
+      }
+      .chart-card {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r-xl);
+        padding: var(--sp6);
+      }
+      .chart-title {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        margin-bottom: var(--sp5);
+      }
+      .modal-bg {
+        position: fixed;
+        inset: 0;
+        background: oklch(0 0 0/0.45);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--sp4);
+      }
+      .modal {
+        background: var(--surf);
+        border-radius: var(--r-xl);
+        padding: var(--sp8);
+        width: 100%;
+        max-width: 480px;
+        box-shadow: var(--shlg);
+        max-height: 90dvh;
+        overflow-y: auto;
+      }
+      .modal h3 {
+        font-size: var(--text-lg);
+        font-weight: 800;
+        margin-bottom: var(--sp6);
+      }
+      .field {
+        margin-bottom: var(--sp4);
+      }
+      .field label {
+        display: block;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--txtm);
+        margin-bottom: var(--sp1);
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        padding: var(--sp2) var(--sp3);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r-md);
+        background: var(--surf2);
+        color: var(--txt);
+        font-size: var(--text-sm);
+        font-family: var(--font-body);
+      }
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        outline: 2px solid var(--pr);
+        outline-offset: 1px;
+      }
+      .modal-btns {
+        display: flex;
+        gap: var(--sp3);
+        justify-content: flex-end;
+        margin-top: var(--sp6);
+      }
+      .toast-wrap {
+        position: fixed;
+        top: var(--sp6);
+        right: var(--sp6);
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp2);
+      }
+      .toast {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r-lg);
+        padding: var(--sp3) var(--sp5);
+        font-size: var(--text-sm);
+        box-shadow: var(--shmd);
+        display: flex;
+        align-items: center;
+        gap: var(--sp2);
+        min-width: 240px;
+      }
+      .toast.success {
+        border-color: var(--suc);
+        color: var(--suc);
+      }
+      .toast.error {
+        border-color: var(--err);
+        color: var(--err);
+      }
+      .member-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--sp4) var(--sp6);
+        border-bottom: 1px solid var(--div);
+      }
+      .member-card:last-child {
+        border-bottom: none;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+        .chart-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body x-data="managerApp()" @keydown.escape="modal=''">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="#" class="sb-logo">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+          <rect
+            x="2"
+            y="2"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+            opacity=".9"
+          />
+          <rect
+            x="16"
+            y="2"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+            opacity=".5"
+          />
+          <rect
+            x="2"
+            y="16"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+            opacity=".5"
+          />
+          <rect
+            x="16"
+            y="16"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+          />
+        </svg>
+        WorkHive
+      </a>
+      <div class="sb-section">Work</div>
+      <a
+        class="sb-item"
+        :class="{active:tab==='dashboard'}"
+        @click="tab='dashboard'"
+        href="#"
+        ><i data-lucide="layout-dashboard"></i> Dashboard</a
+      >
+      <a
+        class="sb-item"
+        :class="{active:tab==='tasks'}"
+        @click="tab='tasks'"
+        href="#"
+        ><i data-lucide="check-square"></i> Tasks</a
+      >
+      <a
+        class="sb-item"
+        :class="{active:tab==='projects'}"
+        @click="tab='projects'"
+        href="#"
+        ><i data-lucide="folder"></i> Projects</a
+      >
+      <a
+        class="sb-item"
+        :class="{active:tab==='team'}"
+        @click="tab='team'"
+        href="#"
+        ><i data-lucide="users"></i> My Team</a
+      >
+      <div class="sb-section">Support</div>
+      <a
+        class="sb-item"
+        :class="{active:tab==='queries'}"
+        @click="tab='queries'"
+        href="#"
+        ><i data-lucide="message-square"></i> Queries
+        <span
+          x-show="openQueryCount>0"
+          style="
+            margin-left: auto;
+            background: var(--err);
+            color: white;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 9999px;
+          "
+          x-text="openQueryCount"
+        ></span
+      ></a>
+      <a
+        class="sb-item"
+        :class="{active:tab==='insights'}"
+        @click="tab='insights'"
+        href="#"
+        ><i data-lucide="bar-chart-2"></i> Insights</a
+      >
+      <div class="sb-bottom">
+        <a href="../shared/profile.html" style="text-decoration: none">
+          <div class="sb-user" href="../shared/profile.html">
+            <div class="avatar" x-text="user?.name?.[0]??'M'"></div>
+            <div>
+              <div class="user-name" x-text="user?.name??'Manager'"></div>
+              <div class="user-role">Manager</div>
+            </div>
+          </div>
+        </a>
+        <button
+          @click="logout()"
+          style="
+            margin-top: var(--sp3);
+            width: 100%;
+            padding: var(--sp2);
+            border-radius: var(--r-md);
+            font-size: var(--text-xs);
+            color: var(--txtm);
+            border: 1px solid var(--bdr);
+            display: flex;
+            align-items: center;
+            gap: var(--sp2);
+          "
+        >
+          <i data-lucide="log-out" style="width: 14px; height: 14px"></i> Sign
+          out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div style="display: flex; align-items: center; gap: var(--sp3)">
+          <h1 class="page-title" x-text="pageTitle"></h1>
+          <span
+            style="
+              font-size: var(--text-xs);
+              font-weight: 600;
+              background: var(--prhi);
+              color: var(--pr);
+              padding: 2px 10px;
+              border-radius: var(--r-full);
+              white-space: nowrap;
+            "
+            x-text="user?.org_name ?? ''"
+          ></span>
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn" data-theme-toggle>
+            <i data-lucide="sun" style="width: 16px; height: 16px"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- DASHBOARD -->
+        <template x-if="tab==='dashboard'">
+          <div>
+            <div class="kpi-grid">
+              <div class="kpi">
+                <div class="kpi-label">My Tasks Created</div>
+                <div class="kpi-val" x-text="tasks.length"></div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Unassigned</div>
+                <div
+                  class="kpi-val"
+                  x-text="tasks.filter(t=>!t.assigned_to).length"
+                ></div>
+                <div class="kpi-sub">Need assignment</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Team Members</div>
+                <div class="kpi-val" x-text="team?.members?.length??0"></div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Open Queries</div>
+                <div class="kpi-val" x-text="openQueryCount"></div>
+                <div
+                  class="kpi-sub"
+                  :class="openQueryCount>0?'':''"
+                  x-text="openQueryCount>0?'Awaiting reply':'All clear ✓'"
+                ></div>
+              </div>
+            </div>
+
+            <div class="chart-grid">
+              <div class="chart-card">
+                <div class="chart-title">Task Status</div>
+                <canvas id="mgTaskChart" height="220"></canvas>
+              </div>
+              <div class="chart-card">
+                <div class="chart-title">Recent Activity</div>
+                <template x-for="t in tasks.slice(0,6)" :key="t.task_id">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      padding: var(--sp2) 0;
+                      border-bottom: 1px solid var(--div);
+                    "
+                  >
+                    <span
+                      style="font-size: var(--text-sm)"
+                      x-text="t.name?.substring(0,28)+'...'"
+                    ></span>
+                    <span
+                      class="badge"
+                      :class="'badge-'+t.status"
+                      x-text="t.status.replace('_',' ')"
+                    ></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- TASKS -->
+        <template x-if="tab==='tasks'">
+          <div>
+            <div
+              style="
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: var(--sp5);
+              "
+            >
+              <button class="btn-sm" @click="modal='createTask'">
+                + Create Task
+              </button>
+            </div>
+            <div class="section">
+              <div class="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Task Name</th>
+                      <th>Project</th>
+                      <th>Assigned To</th>
+                      <th>Priority</th>
+                      <th>Status</th>
+                      <th>Deadline</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="t in tasks" :key="t.task_id">
+                      <tr>
+                        <td style="font-weight: 600" x-text="t.name"></td>
+                        <td x-text="t.project_name??'—'"></td>
+                        <td x-text="t.assigned_to_name??'Unassigned'"></td>
+                        <td>
+                          <span
+                            class="badge"
+                            :class="'badge-'+t.priority"
+                            x-text="t.priority"
+                          ></span>
+                        </td>
+                        <td>
+                          <span
+                            class="badge"
+                            :class="'badge-'+t.status"
+                            x-text="t.status.replace('_',' ')"
+                          ></span>
+                        </td>
+                        <td
+                          x-text="t.deadline ? t.deadline.substring(0,10) : '—'"
+                        ></td>
+                        <td style="display: flex; gap: var(--sp2)">
+                          <button
+                            class="btn-sm ghost"
+                            @click="openAssign(t)"
+                            x-show="!t.assigned_to"
+                          >
+                            Assign
+                          </button>
+                          <button
+                            class="btn-sm ghost"
+                            style="color: var(--err); border-color: var(--err)"
+                            @click="deleteTask(t.task_id)"
+                          >
+                            Del
+                          </button>
+                        </td>
+                      </tr>
+                    </template>
+                    <tr x-show="tasks.length===0">
+                      <td
+                        colspan="7"
+                        style="
+                          text-align: center;
+                          color: var(--txtm);
+                          padding: var(--sp10);
+                        "
+                      >
+                        No tasks yet. Create one!
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- PROJECTS -->
+        <template x-if="tab==='projects'">
+          <div>
+            <div class="section">
+              <div class="section-head"><h2>All Projects</h2></div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Priority</th>
+                      <th>Status</th>
+                      <th>Progress</th>
+                      <th>Tasks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="p in projects" :key="p.project_id">
+                      <tr>
+                        <td style="font-weight: 600" x-text="p.name"></td>
+                        <td x-text="p.type??'—'"></td>
+                        <td>
+                          <span
+                            class="badge"
+                            :class="'badge-'+p.priority"
+                            x-text="p.priority"
+                          ></span>
+                        </td>
+                        <td>
+                          <span
+                            class="badge"
+                            :class="'badge-'+p.status"
+                            x-text="p.status"
+                          ></span>
+                        </td>
+                        <td style="min-width: 110px">
+                          <div class="prog-wrap">
+                            <div
+                              class="prog-bar"
+                              :style="'width:'+p.progress+'%'"
+                            ></div>
+                          </div>
+                          <span
+                            style="font-size: 11px; color: var(--txtm)"
+                            x-text="p.progress+'%'"
+                          ></span>
+                        </td>
+                        <td
+                          x-text="(p.completed_tasks??0) + '/' + (p.total_tasks??0)"
+                        ></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- TEAM -->
+        <template x-if="tab==='team'">
+          <div>
+            <div class="section" style="margin-bottom: var(--sp6)">
+              <div class="section-head">
+                <h2 x-text="team?.name ?? team?.team_name ?? 'My Team'"></h2>
+                <button class="btn-sm ghost" @click="modal='renameTeam'">
+                  Rename
+                </button>
+              </div>
+              <template x-for="m in team?.members??[]" :key="m.user_id">
+                <div class="member-card">
+                  <div
+                    style="display: flex; align-items: center; gap: var(--sp3)"
+                  >
+                    <div class="avatar" x-text="m.name?.[0]??'?'"></div>
+                    <div>
+                      <div
+                        style="font-weight: 600; font-size: var(--text-sm)"
+                        x-text="m.name"
+                      ></div>
+                      <div
+                        style="font-size: var(--text-xs); color: var(--txtm)"
+                        x-text="m.email"
+                      ></div>
+                    </div>
+                  </div>
+                  <div style="text-align: right">
+                    <div
+                      style="font-size: var(--text-xs); color: var(--txtm)"
+                      x-text="(m.completed_tasks??0) + '/' + (m.total_tasks??0) + ' tasks done'"
+                    ></div>
+                    <div style="margin-top: var(--sp1); min-width: 100px">
+                      <div class="prog-wrap">
+                        <div
+                          class="prog-bar"
+                          :style="'width:'+(m.total_tasks>0?Math.round(m.completed_tasks/m.total_tasks*100):0)+'%'"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <div
+                x-show="!team?.members?.length"
+                style="
+                  padding: var(--sp10);
+                  text-align: center;
+                  color: var(--txtm);
+                "
+              >
+                No team members yet.
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- QUERIES -->
+        <template x-if="tab==='queries'">
+          <div>
+            <div class="section">
+              <div class="section-head">
+                <h2>Employee Queries</h2>
+                <span
+                  style="font-size: var(--text-xs); color: var(--txtm)"
+                  x-text="openQueryCount + ' open'"
+                ></span>
+              </div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>From</th>
+                      <th>Subject</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="q in queries" :key="q.id">
+                      <tr>
+                        <td x-text="q.from_name"></td>
+                        <td x-text="q.subject"></td>
+                        <td>
+                          <span
+                            class="badge"
+                            :class="q.is_answered?'badge-resolved':'badge-open'"
+                            x-text="q.is_answered?'Resolved':'Open'"
+                          ></span>
+                        </td>
+                        <td x-text="q.created_at?.substring(0,10)"></td>
+                        <td>
+                          <button class="btn-sm ghost" @click="openReply(q)">
+                            Reply
+                          </button>
+                        </td>
+                      </tr>
+                    </template>
+                    <tr x-show="queries.length===0">
+                      <td
+                        colspan="5"
+                        style="
+                          text-align: center;
+                          color: var(--txtm);
+                          padding: var(--sp10);
+                        "
+                      >
+                        No queries received yet.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- INSIGHTS -->
+        <template x-if="tab==='insights'">
+          <div>
+            <div class="chart-grid">
+              <div class="chart-card">
+                <div class="chart-title">Team Performance</div>
+                <canvas id="teamChart" height="250"></canvas>
+              </div>
+              <div class="chart-card">
+                <div class="chart-title">Member Stats</div>
+                <template x-for="m in insights" :key="m.name">
+                  <div style="margin-bottom: var(--sp4)">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        font-size: var(--text-sm);
+                        margin-bottom: var(--sp1);
+                      "
+                    >
+                      <span x-text="m.name"></span>
+                      <span
+                        style="color: var(--pr); font-weight: 700"
+                        x-text="(m.completion_pct??0)+'%'"
+                      ></span>
+                    </div>
+                    <div class="prog-wrap">
+                      <div
+                        class="prog-bar"
+                        :style="'width:'+(m.completion_pct??0)+'%'"
+                      ></div>
+                    </div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        color: var(--txtm);
+                        margin-top: var(--sp1);
+                      "
+                      x-text="(m.completed??0)+' completed · '+(m.in_progress??0)+' in progress · '+(m.pending??0)+' pending'"
+                    ></div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </main>
+
+    <!-- CREATE TASK MODAL -->
+    <div
+      class="modal-bg"
+      x-show="modal==='createTask'"
+      x-cloak
+      @click.self="modal=''"
+    >
+      <div class="modal">
+        <h3>Create Task</h3>
+        <div class="field">
+          <label>Task Name</label
+          ><input
+            type="text"
+            x-model="newTask.title"
+            placeholder="e.g. Build Login Page UI"
+          />
+        </div>
+        <div class="field">
+          <label>Description</label
+          ><textarea x-model="newTask.description" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label>Project</label>
+          <select x-model="newTask.project_id">
+            <option value="">Select project...</option>
+            <template x-for="p in projects" :key="p.project_id"
+              ><option :value="p.project_id" x-text="p.name"></option
+            ></template>
+          </select>
+        </div>
+        <div
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp4)"
+        >
+          <div class="field">
+            <label>Priority</label>
+            <select x-model="newTask.priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Due Date</label
+            ><input type="date" x-model="newTask.due_date" />
+          </div>
+        </div>
+        <div class="modal-btns">
+          <button class="btn-sm ghost" @click="modal=''">Cancel</button>
+          <button class="btn-sm" @click="createTask()">Create Task</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSIGN TASK MODAL -->
+    <div
+      class="modal-bg"
+      x-show="modal==='assignTask'"
+      x-cloak
+      @click.self="modal=''"
+    >
+      <div class="modal">
+        <h3>Assign Task</h3>
+        <p
+          style="
+            font-size: var(--text-sm);
+            color: var(--txtm);
+            margin-bottom: var(--sp5);
+          "
+          x-text="'Task: ' + selectedTask?.name"
+        ></p>
+        <div class="field">
+          <label>Assign To</label>
+          <select x-model="assignUserId">
+            <option value="">Select employee...</option>
+            <template x-for="m in team?.members??[]" :key="m.user_id"
+              ><option :value="m.user_id" x-text="m.name"></option
+            ></template>
+          </select>
+        </div>
+        <div class="modal-btns">
+          <button class="btn-sm ghost" @click="modal=''">Cancel</button>
+          <button class="btn-sm" @click="assignTask()">Assign</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPLY MODAL -->
+    <div
+      class="modal-bg"
+      x-show="modal==='replyQuery'"
+      x-cloak
+      @click.self="modal=''"
+    >
+      <div class="modal">
+        <h3>Reply to Query</h3>
+        <div
+          style="
+            background: var(--surfoff);
+            border-radius: var(--r-lg);
+            padding: var(--sp4);
+            margin-bottom: var(--sp5);
+          "
+        >
+          <div
+            style="font-weight: 600; font-size: var(--text-sm)"
+            x-text="selectedQuery?.subject"
+          ></div>
+          <div
+            style="
+              font-size: var(--text-sm);
+              color: var(--txtm);
+              margin-top: var(--sp2);
+            "
+            x-text="selectedQuery?.message"
+          ></div>
+        </div>
+        <div class="field">
+          <label>Your Reply</label
+          ><textarea
+            x-model="replyText"
+            rows="4"
+            placeholder="Type your reply here..."
+          ></textarea>
+        </div>
+        <div class="modal-btns">
+          <button class="btn-sm ghost" @click="modal=''">Cancel</button>
+          <button class="btn-sm" @click="submitReply()">Send Reply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RENAME TEAM MODAL -->
+    <div
+      class="modal-bg"
+      x-show="modal==='renameTeam'"
+      x-cloak
+      @click.self="modal=''"
+    >
+      <div class="modal">
+        <h3>Rename Team</h3>
+        <div class="field">
+          <label>New Team Name</label
+          ><input
+            type="text"
+            x-model="newTeamName"
+            :placeholder="team?.name??'Team name'"
+          />
+        </div>
+        <div class="modal-btns">
+          <button class="btn-sm ghost" @click="modal=''">Cancel</button>
+          <button class="btn-sm" @click="renameTeam()">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-wrap">
+      <template x-for="t in toasts" :key="t.id">
+        <div class="toast" :class="t.type" x-text="t.msg"></div>
+      </template>
+    </div>
+
+    <script>
+      const API = "http://localhost:3000";
+      function getToken() {
+        return localStorage.getItem("token");
+      }
+      function getUser() {
+        try {
+          return JSON.parse(localStorage.getItem("user"));
+        } catch {
+          return null;
+        }
+      }
+      async function api(path, opts = {}) {
+        const res = await fetch(API + path, {
+          ...opts,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken(),
+            ...(opts.headers || {}),
+          },
+        });
+        const data = await res.json();
+
+        // Only logout on 401 (expired/invalid token) — NOT on 403 (forbidden/plan limit)
+        if (res.status === 401) {
+          location.href = "../login.html";
+        }
+
+        return data;
+      }
+
+      // Global date formatter — use everywhere dates are displayed
+      function formatDate(dateStr) {
+        if (!dateStr) return "—";
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr;
+        return date.toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+        // Output: 31 May 2026
+      }
+
+      // Short version — just the date part from ISO strings
+      function fmtDate(dateStr) {
+        if (!dateStr) return "—";
+        // Handle both '2026-05-31' and '2026-05-31T18:30:00.000Z'
+        return dateStr.substring(0, 10);
+        // Output: 2026-05-31
+      }
+
+      function managerApp() {
+        return {
+          tab: "dashboard",
+          user: getUser(),
+          tasks: [],
+          projects: [],
+          team: null,
+          queries: [],
+          insights: [],
+          modal: "",
+          newTask: {
+            title: "",
+            description: "",
+            project_id: "",
+            priority: "medium",
+            due_date: "",
+          },
+          selectedTask: null,
+          assignUserId: "",
+          selectedQuery: null,
+          replyText: "",
+          newTeamName: "",
+          toasts: [],
+
+          get pageTitle() {
+            const m = {
+              dashboard: "Dashboard",
+              tasks: "Tasks",
+              projects: "Projects",
+              team: "My Team",
+              queries: "Queries",
+              insights: "Insights",
+            };
+            return m[this.tab] || "Dashboard";
+          },
+          get openQueryCount() {
+            return this.queries.filter((q) => !q.is_answered).length;
+          },
+
+          async init() {
+            if (!getToken()) {
+              location.href = "../login.html";
+              return;
+            }
+            await this.loadAll();
+            this.$nextTick(() => {
+              lucide.createIcons();
+              this.renderCharts();
+            });
+          },
+
+          async loadAll() {
+            const [tasksRes, projectsRes, teamRes, queriesRes, insightsRes] =
+              await Promise.all([
+                api("/api/manager/tasks"),
+                api("/api/manager/projects"),
+                api("/api/manager/team"),
+                api("/api/manager/queries"),
+                api("/api/manager/insights"),
+              ]);
+            this.tasks = tasksRes.data || [];
+            this.projects = projectsRes.data || [];
+            this.team = teamRes.data || null;
+            this.queries = queriesRes.data || [];
+            this.insights = insightsRes.data || [];
+          },
+
+          renderCharts() {
+            const isDark =
+              document.documentElement.getAttribute("data-theme") === "dark";
+            const tc = isDark ? "#797876" : "#7a7974";
+            const gc = isDark ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.06)";
+
+            const completed = this.tasks.filter(
+              (t) => t.status === "completed",
+            ).length;
+            const inprog = this.tasks.filter(
+              (t) => t.status === "in_progress",
+            ).length;
+            const pending = this.tasks.filter(
+              (t) => t.status === "pending",
+            ).length;
+
+            const ctx = document.getElementById("mgTaskChart");
+            if (ctx)
+              new Chart(ctx, {
+                type: "doughnut",
+                data: {
+                  labels: ["Completed", "In Progress", "Pending"],
+                  datasets: [
+                    {
+                      data: [completed, inprog, pending],
+                      backgroundColor: ["#01696f", "#d19900", "#bab9b4"],
+                      borderWidth: 0,
+                      hoverOffset: 4,
+                    },
+                  ],
+                },
+                options: {
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: { color: tc, boxWidth: 12 },
+                    },
+                  },
+                  cutout: "70%",
+                },
+              });
+
+            const tCtx = document.getElementById("teamChart");
+            if (tCtx && this.insights.length) {
+              new Chart(tCtx, {
+                type: "bar",
+                data: {
+                  labels: this.insights.map((i) => i.name),
+                  datasets: [
+                    {
+                      label: "Completed",
+                      data: this.insights.map((i) => i.completed || 0),
+                      backgroundColor: "#01696f",
+                      borderRadius: 3,
+                    },
+                    {
+                      label: "In Progress",
+                      data: this.insights.map((i) => i.in_progress || 0),
+                      backgroundColor: "#d19900",
+                      borderRadius: 3,
+                    },
+                  ],
+                },
+                options: {
+                  plugins: { legend: { labels: { color: tc, boxWidth: 12 } } },
+                  scales: {
+                    x: { grid: { color: gc }, ticks: { color: tc } },
+                    y: { grid: { color: gc }, ticks: { color: tc } },
+                  },
+                },
+              });
+            }
+          },
+
+          openAssign(task) {
+            this.selectedTask = task;
+            this.assignUserId = "";
+            this.modal = "assignTask";
+            this.$nextTick(() => lucide.createIcons());
+          },
+          openReply(q) {
+            this.selectedQuery = q;
+            this.replyText = "";
+            this.modal = "replyQuery";
+            this.$nextTick(() => lucide.createIcons());
+          },
+
+          async createTask() {
+            if (!this.newTask.title || !this.newTask.project_id) {
+              this.toast("Title and project required", "error");
+              return;
+            }
+            const res = await api("/api/manager/tasks", {
+              method: "POST",
+              body: JSON.stringify(this.newTask),
+            });
+            if (res.success) {
+              this.toast("Task created!", "success");
+              this.modal = "";
+              await this.loadAll();
+            } else {
+              this.toast(res.error, "error");
+            }
+          },
+
+          async assignTask() {
+            if (!this.assignUserId) {
+              this.toast("Select an employee", "error");
+              return;
+            }
+            const res = await api(
+              "/api/manager/tasks/" + this.selectedTask.task_id + "/assign",
+              {
+                method: "PUT",
+                body: JSON.stringify({ user_id: this.assignUserId }),
+              },
+            );
+            if (res.success) {
+              this.toast("Task assigned!", "success");
+              this.modal = "";
+              await this.loadAll();
+            } else {
+              this.toast(res.error, "error");
+            }
+          },
+
+          async submitReply() {
+            if (!this.replyText.trim()) {
+              this.toast("Reply cannot be empty", "error");
+              return;
+            }
+            const res = await api(
+              "/api/manager/queries/" + this.selectedQuery.id + "/reply",
+              {
+                method: "PUT",
+                body: JSON.stringify({ reply: this.replyText }),
+              },
+            );
+            if (res.success) {
+              this.toast("Reply sent!", "success");
+              this.modal = "";
+              await this.loadAll();
+            } else {
+              this.toast(res.error, "error");
+            }
+          },
+
+          async deleteTask(id) {
+            if (!confirm("Delete this task?")) return;
+            const res = await api("/api/manager/tasks/" + id, {
+              method: "DELETE",
+            });
+            if (res.success) {
+              this.toast("Task deleted", "success");
+              await this.loadAll();
+            }
+          },
+
+          async renameTeam() {
+            if (!this.newTeamName.trim()) return;
+            const res = await api("/api/manager/team/rename", {
+              method: "PUT",
+              body: JSON.stringify({ team_name: this.newTeamName }),
+            });
+            if (res.success) {
+              this.toast("Team renamed!", "success");
+              this.modal = "";
+              await this.loadAll();
+            }
+          },
+
+          logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            location.href = "../login.html";
+          },
+          toast(msg, type = "success") {
+            const id = Date.now();
+            this.toasts.push({ id, msg, type });
+            setTimeout(() => {
+              this.toasts = this.toasts.filter((t) => t.id !== id);
+            }, 3500);
+          },
+        };
+      }
+
+      (function () {
+        const t = document.querySelector("[data-theme-toggle]"),
+          r = document.documentElement;
+        let d =
+          localStorage.getItem("theme") ||
+          (matchMedia("(prefers-color-scheme:dark)").matches
+            ? "dark"
+            : "light");
+        r.setAttribute("data-theme", d);
+        if (t)
+          t.addEventListener("click", () => {
+            d = d === "dark" ? "light" : "dark";
+            r.setAttribute("data-theme", d);
+            localStorage.setItem("theme", d);
+            lucide.createIcons();
+          });
+      })();
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

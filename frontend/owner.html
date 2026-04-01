@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WorkHive — Owner Portal</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --font-display:'Cabinet Grotesk',sans-serif;
+      --font-body:'Inter',sans-serif;
+      --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);
+      --text-sm:clamp(.875rem,.8rem + .35vw,1rem);
+      --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+      --text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);
+      --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+      --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;--sp5:1.25rem;
+      --sp6:1.5rem;--sp8:2rem;--sp10:2.5rem;--sp12:3rem;
+      --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-full:9999px;
+      --tr:180ms cubic-bezier(.16,1,.3,1)
+    }
+    :root,[data-theme="light"]{
+      --bg:#f7f6f2;--surf:#f9f8f5;--surf2:#fbfbf9;--surfoff:#f3f0ec;
+      --div:#dcd9d5;--bdr:#d4d1ca;--txt:#28251d;--txtm:#7a7974;
+      --txtf:#bab9b4;--txti:#f9f8f4;--pr:#01696f;--prh:#0c4e54;--prhi:#cedcd8;
+      --err:#a12c7b;--suc:#437a22;--warn:#964219;
+      --shsm:0 1px 2px oklch(.2 .01 80/.06);
+      --shmd:0 4px 12px oklch(.2 .01 80/.08);
+      --shlg:0 12px 32px oklch(.2 .01 80/.12)
+    }
+    [data-theme="dark"]{
+      --bg:#171614;--surf:#1c1b19;--surf2:#201f1d;--surfoff:#1d1c1a;
+      --div:#262523;--bdr:#393836;--txt:#cdccca;--txtm:#797876;
+      --txtf:#5a5957;--txti:#2b2a28;--pr:#4f98a3;--prh:#227f8b;--prhi:#313b3b;
+      --err:#d163a7;--suc:#6daa45;--warn:#bb653b;
+      --shmd:0 4px 12px oklch(0 0 0/.3);--shlg:0 12px 32px oklch(0 0 0/.4)
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-font-smoothing:antialiased}
+    body{font-family:var(--font-body);font-size:var(--text-sm);color:var(--txt);background:var(--bg);min-height:100dvh;display:flex;flex-direction:column}
+    h1,h2,h3{font-family:var(--font-display);line-height:1.2}
+    button,a{transition:color var(--tr),background var(--tr);cursor:pointer}
+    button{border:none;background:none;font:inherit;color:inherit}
+
+    /* ── Header ── */
+    header{background:var(--surf);border-bottom:1px solid var(--div);padding:var(--sp4) var(--sp8);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+    .logo{display:flex;align-items:center;gap:var(--sp2);font-family:var(--font-display);font-weight:800;font-size:var(--text-base);color:var(--txt)}
+    .owner-badge{background:var(--pr);color:var(--txti);font-size:var(--text-xs);font-weight:700;padding:2px 10px;border-radius:var(--r-full);letter-spacing:.05em}
+    .icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);border:1px solid var(--bdr);color:var(--txtm)}
+    .icon-btn:hover{background:var(--surfoff)}
+
+    /* ── Main ── */
+    main{flex:1;overflow-y:auto;padding:var(--sp8)}
+    .container{max-width:1400px;margin-inline:auto}
+
+    /* ── Stats bar ── */
+    .stats-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:var(--sp4);margin-bottom:var(--sp8)}
+    .stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r-xl);padding:var(--sp5)}
+    .stat-label{font-size:var(--text-xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txtm);margin-bottom:var(--sp1)}
+    .stat-val{font-size:var(--text-xl);font-weight:800;font-family:var(--font-display);font-variant-numeric:tabular-nums;color:var(--txt)}
+
+    /* ── Search/filter bar ── */
+    .filter-bar{display:flex;align-items:center;gap:var(--sp3);margin-bottom:var(--sp6);flex-wrap:wrap}
+    .search-input{padding:var(--sp2) var(--sp4);border:1px solid var(--bdr);border-radius:var(--r-md);background:var(--surf);color:var(--txt);font-size:var(--text-sm);font-family:var(--font-body);min-width:240px}
+    .search-input:focus{outline:2px solid var(--pr);outline-offset:1px}
+    .filter-tab{padding:var(--sp1) var(--sp4);font-size:var(--text-xs);font-weight:600;border-radius:var(--r-full);border:1px solid var(--bdr);background:transparent;color:var(--txtm)}
+    .filter-tab.active{background:var(--pr);color:var(--txti);border-color:var(--pr)}
+    .filter-tab:hover:not(.active){background:var(--surfoff);color:var(--txt)}
+
+    /* ── Org grid ── */
+    .org-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(400px,100%),1fr));gap:var(--sp6)}
+
+    /* ── Org card ── */
+    .org-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shsm);transition:box-shadow var(--tr)}
+    .org-card:hover{box-shadow:var(--shmd)}
+    .org-card-header{padding:var(--sp6);border-bottom:1px solid var(--div);display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp3)}
+    .org-name{font-size:var(--text-base);font-weight:800;font-family:var(--font-display);color:var(--txt)}
+    .org-meta{font-size:var(--text-xs);color:var(--txtm);margin-top:var(--sp1)}
+    .plan-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:var(--r-full);flex-shrink:0}
+    .plan-free{background:oklch(from var(--txtm) l c h/.12);color:var(--txtm)}
+    .plan-pro{background:oklch(from var(--pr) l c h/.15);color:var(--pr)}
+    .plan-ultra{background:oklch(from var(--warn) l c h/.15);color:var(--warn)}
+    .plan-enterprise{background:oklch(from var(--suc) l c h/.15);color:var(--suc)}
+
+    /* ── Org stats row ── */
+    .org-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--div)}
+    .org-stat{padding:var(--sp3) var(--sp4);text-align:center;border-right:1px solid var(--div)}
+    .org-stat:last-child{border-right:none}
+    .org-stat-num{font-size:var(--text-base);font-weight:800;font-family:var(--font-display);font-variant-numeric:tabular-nums;color:var(--pr)}
+    .org-stat-lbl{font-size:10px;color:var(--txtm);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+
+    /* ── Expandable details ── */
+    .org-body{padding:var(--sp5) var(--sp6)}
+    .detail-section{margin-bottom:var(--sp5)}
+    .detail-title{font-size:var(--text-xs);font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txtf);margin-bottom:var(--sp3)}
+
+    /* ── Members list ── */
+    .member-row{display:flex;align-items:center;justify-content:space-between;padding:var(--sp2) 0;border-bottom:1px solid var(--div)}
+    .member-row:last-child{border-bottom:none}
+    .member-info{display:flex;align-items:center;gap:var(--sp2)}
+    .avatar-sm{width:28px;height:28px;border-radius:50%;background:var(--prhi);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--pr);flex-shrink:0}
+    .member-name{font-size:var(--text-xs);font-weight:600;color:var(--txt)}
+    .member-email{font-size:10px;color:var(--txtm)}
+
+    /* ── Projects list ── */
+    .proj-row{display:flex;align-items:center;justify-content:space-between;padding:var(--sp2) 0;border-bottom:1px solid var(--div)}
+    .proj-row:last-child{border-bottom:none}
+    .proj-name{font-size:var(--text-xs);font-weight:600;color:var(--txt)}
+    .prog-wrap{background:var(--surfoff);border-radius:var(--r-full);height:4px;width:80px}
+    .prog-bar{height:100%;background:var(--pr);border-radius:var(--r-full)}
+
+    /* ── Badges ── */
+    .badge{display:inline-flex;align-items:center;padding:1px 6px;border-radius:var(--r-full);font-size:10px;font-weight:600}
+    .badge-admin{background:oklch(from var(--pr) l c h/.15);color:var(--pr)}
+    .badge-manager{background:oklch(from var(--warn) l c h/.15);color:var(--warn)}
+    .badge-employee{background:oklch(from var(--txtm) l c h/.1);color:var(--txtm)}
+    .badge-active{background:oklch(from var(--suc) l c h/.15);color:var(--suc)}
+    .badge-on_hold{background:oklch(from var(--txtm) l c h/.1);color:var(--txtm)}
+    .badge-completed{background:oklch(from var(--pr) l c h/.15);color:var(--pr)}
+    .badge-high{background:oklch(from var(--err) l c h/.12);color:var(--err)}
+    .badge-critical{background:oklch(from var(--err) l c h/.2);color:var(--err)}
+    .badge-medium{background:oklch(from var(--warn) l c h/.12);color:var(--warn)}
+
+    /* ── Toggle expand ── */
+    .expand-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:var(--sp2);padding:var(--sp3);font-size:var(--text-xs);font-weight:600;color:var(--txtm);border-top:1px solid var(--div);background:transparent}
+    .expand-btn:hover{background:var(--surfoff);color:var(--txt)}
+
+    /* ── Loading ── */
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:32px;height:32px;border:3px solid var(--prhi);border-top-color:var(--pr);border-radius:50%;animation:spin .8s linear infinite;margin:var(--sp16) auto}
+    .empty-msg{text-align:center;color:var(--txtm);padding:var(--sp16);font-size:var(--text-sm)}
+
+    /* ── Charts ── */
+    .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp6);margin-bottom:var(--sp8)}
+    .chart-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r-xl);padding:var(--sp6)}
+    .chart-title{font-size:var(--text-sm);font-weight:700;margin-bottom:var(--sp5);color:var(--txt)}
+
+    @media(max-width:640px){.org-stats{grid-template-columns:repeat(2,1fr)}.chart-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body x-data="ownerApp()" data-theme="light">
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+      <rect x="2" y="2" width="10" height="10" rx="2" fill="currentColor" opacity=".9"/>
+      <rect x="16" y="2" width="10" height="10" rx="2" fill="currentColor" opacity=".5"/>
+      <rect x="2" y="16" width="10" height="10" rx="2" fill="currentColor" opacity=".5"/>
+      <rect x="16" y="16" width="10" height="10" rx="2" fill="currentColor"/>
+    </svg>
+    WorkHive
+    <span class="owner-badge">Owner Portal</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:var(--sp3)">
+    <span style="font-size:var(--text-xs);color:var(--txtm)" x-text="'Last updated: ' + lastUpdated"></span>
+    <button class="icon-btn" @click="loadData()" aria-label="Refresh">
+      <i data-lucide="refresh-cw" style="width:16px;height:16px"></i>
+    </button>
+    <button class="icon-btn" data-theme-toggle aria-label="Toggle theme">
+      <i data-lucide="sun" style="width:16px;height:16px"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main>
+  <div class="container">
+
+    <!-- Loading -->
+    <div x-show="loading" class="spinner"></div>
+
+    <template x-if="!loading">
+      <div>
+        <!-- ── GLOBAL STATS ── -->
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-label">Total Organisations</div>
+            <div class="stat-val" x-text="orgs.length"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-val" x-text="allMembers.length"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Projects</div>
+            <div class="stat-val" x-text="allProjects.length"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pro+ Plans</div>
+            <div class="stat-val" x-text="orgs.filter(o=>o.plan!=='free').length"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Free Plans</div>
+            <div class="stat-val" x-text="orgs.filter(o=>o.plan==='free').length"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-val" x-text="'₹' + totalRevenue.toLocaleString('en-IN')"></div>
+          </div>
+        </div>
+
+        <!-- ── CHARTS ROW ── -->
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-title">Plans Distribution</div>
+            <canvas id="planChart" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Projects per Organisation</div>
+            <canvas id="projChart" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- ── FILTER BAR ── -->
+        <div class="filter-bar">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search organisations..."
+            x-model="search"
+          >
+          <button class="filter-tab" :class="{active:planFilter==='all'}" @click="planFilter='all'">All</button>
+          <button class="filter-tab" :class="{active:planFilter==='free'}" @click="planFilter='free'">Free</button>
+          <button class="filter-tab" :class="{active:planFilter==='pro'}" @click="planFilter='pro'">Pro</button>
+          <button class="filter-tab" :class="{active:planFilter==='ultra'}" @click="planFilter='ultra'">Ultra</button>
+          <button class="filter-tab" :class="{active:planFilter==='enterprise'}" @click="planFilter='enterprise'">Enterprise</button>
+          <span style="font-size:var(--text-xs);color:var(--txtm);margin-left:auto" x-text="filteredOrgs.length + ' organisations'"></span>
+        </div>
+
+        <!-- ── ORG CARDS ── -->
+        <div class="org-grid">
+          <template x-for="org in filteredOrgs" :key="org.tenant_id">
+            <div class="org-card">
+
+              <!-- Card Header -->
+              <div class="org-card-header">
+                <div>
+                  <div class="org-name" x-text="org.org_name"></div>
+                  <div class="org-meta">
+                    ID: <span x-text="org.tenant_id"></span> ·
+                    Created: <span x-text="org.created_at?.substring(0,10)"></span> ·
+                    Status: <span :style="org.subscription_status==='active'?'color:var(--suc)':'color:var(--err)'" x-text="org.subscription_status ?? 'active'"></span>
+                  </div>
+                </div>
+                <span class="plan-badge" :class="'plan-' + org.plan" x-text="org.plan.toUpperCase()"></span>
+              </div>
+
+              <!-- Stats Row -->
+              <div class="org-stats">
+                <div class="org-stat">
+                  <div class="org-stat-num" x-text="org.total_users"></div>
+                  <div class="org-stat-lbl">Users</div>
+                </div>
+                <div class="org-stat">
+                  <div class="org-stat-num" x-text="org.total_projects"></div>
+                  <div class="org-stat-lbl">Projects</div>
+                </div>
+                <div class="org-stat">
+                  <div class="org-stat-num" x-text="org.total_tasks"></div>
+                  <div class="org-stat-lbl">Tasks</div>
+                </div>
+                <div class="org-stat">
+                  <div class="org-stat-num" x-text="org.total_teams"></div>
+                  <div class="org-stat-lbl">Teams</div>
+                </div>
+              </div>
+
+              <!-- Expand button -->
+              <button class="expand-btn" @click="toggle(org.tenant_id)">
+                <i :data-lucide="expanded.includes(org.tenant_id) ? 'chevron-up' : 'chevron-down'" style="width:14px;height:14px"></i>
+                <span x-text="expanded.includes(org.tenant_id) ? 'Hide details' : 'View full details'"></span>
+              </button>
+
+              <!-- Expanded Details -->
+              <div x-show="expanded.includes(org.tenant_id)" class="org-body">
+
+                <!-- Members -->
+                <div class="detail-section">
+                  <div class="detail-title">Members (<span x-text="getMembersOf(org.tenant_id).length"></span>)</div>
+                  <template x-for="m in getMembersOf(org.tenant_id)" :key="m.user_id">
+                    <div class="member-row">
+                      <div class="member-info">
+                        <div class="avatar-sm" x-text="m.name?.[0]??'?'"></div>
+                        <div>
+                          <div class="member-name" x-text="m.name"></div>
+                          <div class="member-email" x-text="m.email"></div>
+                        </div>
+                      </div>
+                      <span class="badge" :class="'badge-' + m.role" x-text="m.role"></span>
+                    </div>
+                  </template>
+                  <div x-show="getMembersOf(org.tenant_id).length===0" style="color:var(--txtm);font-size:var(--text-xs);padding:var(--sp3) 0">No members</div>
+                </div>
+
+                <!-- Projects -->
+                <div class="detail-section">
+                  <div class="detail-title">Projects (<span x-text="getProjectsOf(org.tenant_id).length"></span>)</div>
+                  <template x-for="p in getProjectsOf(org.tenant_id)" :key="p.project_id">
+                    <div class="proj-row">
+                      <div>
+                        <div class="proj-name" x-text="p.name"></div>
+                        <span style="font-size:10px;color:var(--txtm)" x-text="(p.type??'—') + ' · ' + p.created_at?.substring(0,10)"></span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:var(--sp3)">
+                        <div class="prog-wrap"><div class="prog-bar" :style="'width:'+(p.progress??0)+'%'"></div></div>
+                        <span style="font-size:10px;color:var(--txtm);min-width:32px;text-align:right" x-text="(p.progress??0)+'%'"></span>
+                        <span class="badge" :class="'badge-'+p.status" x-text="p.status"></span>
+                        <span class="badge" :class="'badge-'+p.priority" x-text="p.priority"></span>
+                      </div>
+                    </div>
+                  </template>
+                  <div x-show="getProjectsOf(org.tenant_id).length===0" style="color:var(--txtm);font-size:var(--text-xs);padding:var(--sp3) 0">No projects</div>
+                </div>
+
+                <!-- Billing -->
+                <div class="detail-section" style="background:var(--surfoff);border-radius:var(--r-lg);padding:var(--sp4)">
+                  <div class="detail-title">Subscription & Billing</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp3);font-size:var(--text-xs)">
+                    <div><span style="color:var(--txtm)">Plan: </span><strong x-text="org.plan"></strong></div>
+                    <div><span style="color:var(--txtm)">Status: </span><strong x-text="org.subscription_status ?? 'active'"></strong></div>
+                    <div><span style="color:var(--txtm)">Renews: </span><strong x-text="org.current_period_end ?? 'N/A'"></strong></div>
+                    <div><span style="color:var(--txtm)">Last Bill: </span><strong x-text="org.last_billing ? '₹' + org.last_billing : '₹0'"></strong></div>
+                  </div>
+                </div>
+
+              </div><!-- /expanded -->
+            </div><!-- /org-card -->
+          </template>
+        </div><!-- /org-grid -->
+
+        <div x-show="filteredOrgs.length===0 && !loading" class="empty-msg">
+          No organisations found matching your filters.
+        </div>
+
+      </div>
+    </template>
+  </div>
+</main>
+
+<script>
+const API = 'http://localhost:3000';
+
+function ownerApp() {
+  return {
+    loading: true,
+    orgs: [],
+    allMembers: [],
+    allProjects: [],
+    expanded: [],
+    search: '',
+    planFilter: 'all',
+    lastUpdated: '—',
+
+    get totalRevenue() {
+      return this.orgs.reduce((sum, o) => sum + (parseFloat(o.last_billing) || 0), 0);
+    },
+
+    get filteredOrgs() {
+      return this.orgs.filter(o => {
+        const matchPlan   = this.planFilter === 'all' || o.plan === this.planFilter;
+        const matchSearch = !this.search || o.org_name.toLowerCase().includes(this.search.toLowerCase());
+        return matchPlan && matchSearch;
+      });
+    },
+
+    getMembersOf(tid)  { return this.allMembers.filter(m => m.tenant_id === tid); },
+    getProjectsOf(tid) { return this.allProjects.filter(p => p.tenant_id === tid); },
+
+    toggle(tid) {
+      if (this.expanded.includes(tid)) {
+        this.expanded = this.expanded.filter(id => id !== tid);
+      } else {
+        this.expanded.push(tid);
+      }
+      this.$nextTick(() => lucide.createIcons());
+    },
+
+    async loadData() {
+      this.loading = true;
+      try {
+        const res  = await fetch(`${API}/api/owner/organisations`);
+        const data = await res.json();
+        if (data.success) {
+          this.orgs        = data.data.orgs;
+          this.allMembers  = data.data.members;
+          this.allProjects = data.data.projects;
+          this.lastUpdated = new Date().toLocaleTimeString('en-IN');
+          this.$nextTick(() => { lucide.createIcons(); this.renderCharts(); });
+        }
+      } catch (err) {
+        console.error('Failed to load owner data:', err);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    renderCharts() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const tc = isDark ? '#797876' : '#7a7974';
+      const gc = isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)';
+
+      const planCount = { free:0, pro:0, ultra:0, enterprise:0 };
+      this.orgs.forEach(o => { planCount[o.plan] = (planCount[o.plan] || 0) + 1; });
+
+      const pc = document.getElementById('planChart');
+      if (pc) new Chart(pc, {
+        type: 'doughnut',
+        data: {
+          labels: ['Free', 'Pro', 'Ultra', 'Enterprise'],
+          datasets: [{ data: [planCount.free, planCount.pro, planCount.ultra, planCount.enterprise],
+            backgroundColor: ['#bab9b4','#01696f','#964219','#437a22'], borderWidth: 0, hoverOffset: 4 }]
+        },
+        options: { plugins: { legend: { position:'bottom', labels:{ color:tc, boxWidth:12 } } }, cutout:'70%' }
+      });
+
+      const projCtx = document.getElementById('projChart');
+      if (projCtx) new Chart(projCtx, {
+        type: 'bar',
+        data: {
+          labels: this.orgs.map(o => o.org_name.substring(0,12)),
+          datasets: [{ label: 'Projects', data: this.orgs.map(o => o.total_projects),
+            backgroundColor: '#01696f', borderRadius: 4 }]
+        },
+        options: {
+          plugins: { legend: { display:false } },
+          scales: {
+            x: { grid:{ color:gc }, ticks:{ color:tc } },
+            y: { grid:{ color:gc }, ticks:{ color:tc } }
+          }
+        }
+      });
+    },
+
+    async init() {
+      await this.loadData();
+    }
+  };
+}
+
+// Theme toggle
+(function(){
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', d);
+  if (t) t.addEventListener('click', () => {
+    d = d === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', d);
+    lucide.createIcons();
+  });
+})();
+lucide.createIcons();
+</script>
+</body>
+</html>

@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register — WorkHive</title>
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      :root {
+        --font-display: "Cabinet Grotesk", sans-serif;
+        --font-body: "Inter", sans-serif;
+        --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+        --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+        --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+        --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+        --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --radius-full: 9999px;
+        --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      :root,
+      [data-theme="light"] {
+        --bg: #f7f6f2;
+        --surface: #f9f8f5;
+        --surface-2: #fbfbf9;
+        --surface-offset: #f3f0ec;
+        --divider: #dcd9d5;
+        --border: #d4d1ca;
+        --text: #28251d;
+        --text-muted: #7a7974;
+        --text-faint: #bab9b4;
+        --text-inv: #f9f8f4;
+        --primary: #01696f;
+        --primary-h: #0c4e54;
+        --primary-hi: #cedcd8;
+        --error: #a12c7b;
+        --success: #437a22;
+        --shadow-md: 0 4px 12px oklch(0.2 0.01 80/0.08);
+      }
+      [data-theme="dark"] {
+        --bg: #171614;
+        --surface: #1c1b19;
+        --surface-2: #201f1d;
+        --surface-offset: #1d1c1a;
+        --divider: #262523;
+        --border: #393836;
+        --text: #cdccca;
+        --text-muted: #797876;
+        --text-faint: #5a5957;
+        --text-inv: #2b2a28;
+        --primary: #4f98a3;
+        --primary-h: #227f8b;
+        --primary-hi: #313b3b;
+        --error: #d163a7;
+        --success: #6daa45;
+        --shadow-md: 0 4px 12px oklch(0 0 0/0.3);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        font-family: var(--font-body);
+        font-size: var(--text-base);
+        color: var(--text);
+        background: var(--bg);
+        min-height: 100dvh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: var(--font-display);
+        line-height: 1.2;
+      }
+      a,
+      button {
+        transition:
+          color var(--transition),
+          background var(--transition),
+          border-color var(--transition);
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        font: inherit;
+        color: inherit;
+      }
+      /* ── Left panel ── */
+      .left-panel {
+        background: var(--primary);
+        padding: var(--space-12);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: var(--text-inv);
+      }
+      .left-panel .logo {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: var(--text-lg);
+        text-decoration: none;
+        color: inherit;
+      }
+      .left-tagline {
+        font-size: var(--text-xl);
+        font-weight: 800;
+        line-height: 1.2;
+        margin-top: auto;
+        margin-bottom: var(--space-8);
+      }
+      .left-tagline span {
+        opacity: 0.6;
+      }
+      .left-steps {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+      }
+      .step {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        font-size: var(--text-sm);
+        opacity: 0.85;
+      }
+      .step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid currentColor;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      /* ── Right panel ── */
+      .right-panel {
+        padding: var(--space-12) var(--space-10);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .right-header {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: var(--space-8);
+      }
+      .form-wrap {
+        max-width: 440px;
+        margin-inline: auto;
+        width: 100%;
+      }
+      .form-title {
+        font-size: var(--text-xl);
+        font-weight: 800;
+        margin-bottom: var(--space-2);
+      }
+      .form-sub {
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-8);
+      }
+      /* ── Form ── */
+      .field {
+        margin-bottom: var(--space-5);
+      }
+      .field label {
+        display: block;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: var(--space-2);
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        padding: var(--space-3) var(--space-4);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        color: var(--text);
+        font-size: var(--text-sm);
+        font-family: var(--font-body);
+      }
+      .field input:focus,
+      .field select:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+        border-color: var(--primary);
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+      }
+      .field-error {
+        font-size: var(--text-xs);
+        color: var(--error);
+        margin-top: var(--space-1);
+        display: none;
+      }
+      .field.has-error .field-error {
+        display: block;
+      }
+      .field.has-error input,
+      .field.has-error select {
+        border-color: var(--error);
+      }
+      .btn-submit {
+        width: 100%;
+        padding: var(--space-4);
+        background: var(--primary);
+        color: #ffffff !important;
+        border-radius: var(--radius-lg);
+        font-size: var(--text-base);
+        font-weight: 700;
+        font-family: var(--font-display);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+      }
+      .btn-submit:hover {
+        background: var(--primary-h);
+      }
+      .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .login-link {
+        text-align: center;
+        margin-top: var(--space-6);
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+      }
+      .login-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      /* ── Plan selector modal ── */
+      .modal-bg {
+        position: fixed;
+        inset: 0;
+        background: oklch(0 0 0/0.5);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-4);
+      }
+      .modal {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        padding: var(--space-8);
+        max-width: 560px;
+        width: 100%;
+        box-shadow: 0 24px 64px oklch(0 0 0/0.3);
+      }
+      .modal h2 {
+        font-size: var(--text-lg);
+        font-weight: 800;
+        margin-bottom: var(--space-2);
+      }
+      .modal p {
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+        margin-bottom: var(--space-6);
+      }
+      .plan-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        margin-bottom: var(--space-6);
+      }
+      .plan-opt {
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        cursor: pointer;
+        text-align: left;
+      }
+      .plan-opt:hover,
+      .plan-opt.selected {
+        border-color: var(--primary);
+        background: var(--primary-hi);
+      }
+      .plan-opt .name {
+        font-weight: 700;
+        font-size: var(--text-sm);
+        color: var(--text);
+      }
+      .plan-opt .price {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+        margin-top: var(--space-1);
+      }
+      /* ── Payment spinner ── */
+      .payment-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-4);
+        padding: var(--space-8);
+      }
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid var(--primary-hi);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .payment-screen p {
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+        text-align: center;
+      }
+      /* ── Success ── */
+      .success-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-4);
+        padding: var(--space-8);
+        text-align: center;
+      }
+      .success-icon {
+        width: 56px;
+        height: 56px;
+        background: var(--success);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+      .theme-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        background: transparent;
+      }
+      @media (max-width: 768px) {
+        body {
+          grid-template-columns: 1fr;
+        }
+        .left-panel {
+          display: none;
+        }
+        .right-panel {
+          padding: var(--space-8) var(--space-6);
+        }
+      }
+    </style>
+  </head>
+  <body x-data="registerApp()" data-theme="light">
+    <!-- ── LEFT PANEL ── -->
+    <aside class="left-panel">
+      <a href="landing.html" class="logo">
+        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+          <rect
+            x="2"
+            y="2"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+            opacity="0.9"
+          />
+          <rect
+            x="16"
+            y="2"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+            opacity="0.5"
+          />
+          <rect
+            x="2"
+            y="16"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+            opacity="0.5"
+          />
+          <rect
+            x="16"
+            y="16"
+            width="10"
+            height="10"
+            rx="2"
+            fill="currentColor"
+          />
+        </svg>
+        WorkHive
+      </a>
+      <div>
+        <div class="left-tagline">
+          Get your team<br /><span>shipping faster.</span>
+        </div>
+        <div class="left-steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <span>Create your organisation account</span>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <span>Choose a plan that fits your team</span>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <span>Invite managers and employees</span>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <span>Start managing projects today</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── RIGHT PANEL ── -->
+    <main class="right-panel">
+      <div class="right-header">
+        <button class="theme-btn" data-theme-toggle aria-label="Toggle theme">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="form-wrap">
+        <h1 class="form-title">Create your account</h1>
+        <p class="form-sub">
+          Start managing projects in minutes. No credit card required for free
+          plan.
+        </p>
+
+        <form @submit.prevent="submitForm" novalidate>
+          <div class="field-row">
+            <div class="field" :class="{'has-error': errors.first_name}">
+              <label for="first_name">First Name</label>
+              <input
+                id="first_name"
+                type="text"
+                placeholder="Arun"
+                x-model="form.first_name"
+                autocomplete="given-name"
+              />
+              <div class="field-error" x-text="errors.first_name"></div>
+            </div>
+            <div class="field" :class="{'has-error': errors.last_name}">
+              <label for="last_name">Last Name</label>
+              <input
+                id="last_name"
+                type="text"
+                placeholder="Kumar"
+                x-model="form.last_name"
+                autocomplete="family-name"
+              />
+              <div class="field-error" x-text="errors.last_name"></div>
+            </div>
+          </div>
+
+          <div class="field" :class="{'has-error': errors.org_name}">
+            <label for="org_name">Organisation Name</label>
+            <input
+              id="org_name"
+              type="text"
+              placeholder="TechCorp India Pvt. Ltd."
+              x-model="form.org_name"
+            />
+            <div class="field-error" x-text="errors.org_name"></div>
+          </div>
+
+          <div class="field" :class="{'has-error': errors.email}">
+            <label for="email">Work Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="arun@techcorp.com"
+              x-model="form.email"
+              autocomplete="email"
+            />
+            <div class="field-error" x-text="errors.email"></div>
+          </div>
+
+          <div class="field" :class="{'has-error': errors.password}">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Min. 8 characters"
+              x-model="form.password"
+              autocomplete="new-password"
+            />
+            <div class="field-error" x-text="errors.password"></div>
+          </div>
+
+          <div class="field" :class="{'has-error': errors.confirm}">
+            <label for="confirm">Confirm Password</label>
+            <input
+              id="confirm"
+              type="password"
+              placeholder="Repeat password"
+              x-model="form.confirm"
+              autocomplete="new-password"
+            />
+            <div class="field-error" x-text="errors.confirm"></div>
+          </div>
+          <!-- Divider -->
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: var(--sp4);
+              margin: var(--sp2) 0;
+            "
+          >
+            <div style="flex: 1; height: 1px; background: var(--div)"></div>
+            <span
+              style="
+                font-size: var(--text-xs);
+                font-weight: 600;
+                color: var(--txtm);
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+              "
+              >Security Setup</span
+            >
+            <div style="flex: 1; height: 1px; background: var(--div)"></div>
+          </div>
+
+          <div
+            style="
+              background: var(--surfoff);
+              border-radius: var(--r-lg);
+              padding: var(--sp4);
+              margin-bottom: var(--sp4);
+              font-size: var(--text-xs);
+              color: var(--txtm);
+              line-height: 1.6;
+            "
+          >
+            <strong style="color: var(--txt)"
+              >Required for account recovery</strong
+            ><br />
+            Your secondary email and phone are used for password recovery and
+            two-step verification. They <strong>must be different</strong> from
+            your work email.
+          </div>
+
+          <div class="field" :class="{'has-error': errors.secondary_email}">
+            <label for="secondary_email"
+              >Secondary Email <span style="color: var(--err)">*</span></label
+            >
+            <input
+              id="secondary_email"
+              type="email"
+              placeholder="personal@gmail.com"
+              x-model="form.secondary_email"
+              autocomplete="off"
+            />
+            <div class="field-error" x-text="errors.secondary_email"></div>
+          </div>
+
+          <div class="field" :class="{'has-error': errors.phone}">
+            <label for="phone"
+              >Phone Number <span style="color: var(--err)">*</span></label
+            >
+            <input
+              id="phone"
+              type="tel"
+              placeholder="+91 98765 43210"
+              x-model="form.phone"
+              autocomplete="tel"
+            />
+            <div class="field-error" x-text="errors.phone"></div>
+          </div>
+
+          <!-- 2FA Toggle -->
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: var(--sp4);
+              background: var(--surfoff);
+              border-radius: var(--r-lg);
+              margin-bottom: var(--sp5);
+            "
+          >
+            <div>
+              <div
+                style="
+                  font-size: var(--text-sm);
+                  font-weight: 600;
+                  color: var(--txt);
+                  padding: 3px;
+                "
+              >
+                Enable Two-Step Verification
+              </div>
+              <div style="font-size: var(--text-xs); color: var(--txtm); padding: 3px;"; >
+                Receive a code on your secondary email at each login
+              </div>
+            </div>
+            <button
+              type="button"
+              @click="form.two_factor_enabled = !form.two_factor_enabled"
+              :style="form.two_factor_enabled
+      ? 'background:var(--pr);width:44px;height:24px;border-radius:9999px;position:relative;border:none;cursor:pointer;transition:.2s'
+      : 'background:var(--bdr);width:44px;height:24px;border-radius:9999px;position:relative;border:none;cursor:pointer;transition:.2s'"
+              :aria-checked="form.two_factor_enabled"
+              role="switch"
+            >
+              <span
+                :style="form.two_factor_enabled
+      ? 'position:absolute;top:3px;right:3px;width:18px;height:18px;background:white;border-radius:50%;transition:.2s'
+      : 'position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:.2s'"
+              >
+              </span>
+            </button>
+          </div>
+
+          <div
+            x-show="apiError"
+            style="
+              background: oklch(from var(--error) l c h/0.1);
+              border: 1px solid var(--error);
+              padding: var(--space-3);
+              border-radius: var(--radius-md);
+              font-size: var(--text-sm);
+              color: var(--error);
+              margin-bottom: var(--space-4);
+            "
+            x-text="apiError"
+          ></div>
+
+          <button type="submit" class="btn-submit" :disabled="loading">Create Account
+            <template x-if="loading">
+              <div
+                style="
+                  width: 18px;
+                  height: 18px;
+                  border: 2px solid rgba(255, 255, 255, 0.4);
+                  border-top-color: white;
+                  border-radius: 50%;
+                  animation: spin 0.8s linear infinite;
+                "
+              ></div>
+            </template>
+            <span
+              x-text="loading ? 'Creating account...' : 'Create account'"
+            ></span>
+          </button>
+        </form>
+
+        <p class="login-link">
+          Already have an account? <a href="login.html">Log in</a>
+        </p>
+      </div>
+    </main>
+
+    <!-- ── PLAN SELECTOR MODAL ── -->
+    <div class="modal-bg" x-show="showPlanModal" x-cloak>
+      <div class="modal" x-show="!showPayment && !showSuccess">
+        <h2>Choose your plan</h2>
+        <p>Select the plan that best fits your team size and needs.</p>
+        <div class="plan-options">
+          <div
+            class="plan-opt"
+            :class="{selected: selectedPlan==='free'}"
+            @click="selectedPlan='free'"
+          >
+            <div class="name">Free</div>
+            <div class="price">₹0 forever · 3 users, 5 projects</div>
+          </div>
+          <div
+            class="plan-opt"
+            :class="{selected: selectedPlan==='pro'}"
+            @click="selectedPlan='pro'"
+          >
+            <div class="name">Pro</div>
+            <div class="price">₹299/mo · 20 users, 50 projects</div>
+          </div>
+          <div
+            class="plan-opt"
+            :class="{selected: selectedPlan==='ultra'}"
+            @click="selectedPlan='ultra'"
+          >
+            <div class="name">Ultra</div>
+            <div class="price">₹999/mo · 100 users, 200 projects</div>
+          </div>
+          <div
+            class="plan-opt"
+            :class="{selected: selectedPlan==='enterprise'}"
+            @click="selectedPlan='enterprise'"
+          >
+            <div class="name">Enterprise</div>
+            <div class="price">Custom · Unlimited everything</div>
+          </div>
+        </div>
+        <button class="btn-submit" @click="confirmPlan">
+          <span
+            x-text="selectedPlan === 'free' ? 'Continue with Free plan' : 'Proceed to payment'"
+          ></span>
+        </button>
+      </div>
+
+      <!-- Payment simulation -->
+      <div class="modal" x-show="showPayment && !showSuccess">
+        <div class="payment-screen">
+          <div class="spinner"></div>
+          <h2>Processing payment...</h2>
+          <p>
+            Activating your
+            <strong x-text="selectedPlan"></strong> plan.<br />This may take a
+            few seconds.
+          </p>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div class="modal" x-show="showSuccess">
+        <div class="success-screen">
+          <div class="success-icon">
+            <svg
+              width="28"
+              height="28"
+              fill="none"
+              stroke="white"
+              stroke-width="2.5"
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          </div>
+          <h2>Account created!</h2>
+          <p style="color: var(--text-muted); font-size: var(--text-sm)">
+            Your <strong x-text="selectedPlan"></strong> plan is active.
+            Redirecting to login...
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function registerApp() {
+        return {
+          form: {
+            first_name: "",
+            last_name: "",
+            org_name: "",
+            email: "",
+            password: "",
+            confirm: "",
+            secondary_email: "", // ← new
+            phone: "", // ← new
+            two_factor_enabled: false, // ← new
+          },
+
+          validate() {
+            this.errors = {};
+            if (!this.form.first_name.trim())
+              this.errors.first_name = "First name is required";
+            if (!this.form.last_name.trim())
+              this.errors.last_name = "Last name is required";
+            if (!this.form.org_name.trim())
+              this.errors.org_name = "Organisation name is required";
+            if (
+              !this.form.email ||
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)
+            )
+              this.errors.email = "Valid work email is required";
+            if (!this.form.password || this.form.password.length < 8)
+              this.errors.password = "Password must be at least 8 characters";
+            if (this.form.password !== this.form.confirm)
+              this.errors.confirm = "Passwords do not match";
+
+            // Secondary email validation
+            if (!this.form.secondary_email)
+              this.errors.secondary_email =
+                "Secondary email is required for account recovery";
+            else if (
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.secondary_email)
+            )
+              this.errors.secondary_email = "Enter a valid email address";
+            else if (
+              this.form.secondary_email.toLowerCase() ===
+              this.form.email.toLowerCase()
+            )
+              this.errors.secondary_email =
+                "Secondary email must be different from your work email";
+
+            // Phone validation
+            if (!this.form.phone)
+              this.errors.phone =
+                "Phone number is required for account recovery";
+            else if (!/^[+]?[\d\s\-()]{7,15}$/.test(this.form.phone))
+              this.errors.phone =
+                "Enter a valid phone number (e.g. +91 98765 43210)";
+
+            return Object.keys(this.errors).length === 0;
+          },
+
+          async submitForm() {
+            this.apiError = "";
+            if (!this.validate()) return;
+            this.loading = true;
+            try {
+              const res = await fetch(
+                "http://localhost:3000/api/auth/register",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    org_name: this.form.org_name,
+                    admin_name:
+                      this.form.first_name + " " + this.form.last_name,
+                    admin_email: this.form.email,
+                    admin_password: this.form.password,
+                    plan: "free",
+                  }),
+                },
+              );
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.error || "Registration failed");
+
+              // Show plan selector
+              const urlPlan = new URLSearchParams(location.search).get("plan");
+              if (urlPlan) this.selectedPlan = urlPlan;
+              this.showPlanModal = true;
+            } catch (err) {
+              this.apiError = err.message;
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          async confirmPlan() {
+            if (this.selectedPlan === "free") {
+              this.showSuccess = true;
+              setTimeout(() => {
+                location.href = "login.html";
+              }, 2000);
+              return;
+            }
+            this.showPayment = true;
+            // Simulate 5-second payment processing
+            await new Promise((r) => setTimeout(r, 5000));
+            this.showPayment = false;
+            this.showSuccess = true;
+            setTimeout(() => {
+              location.href = "login.html";
+            }, 2500);
+          },
+        };
+      }
+
+      // Theme toggle
+      (function () {
+        const t = document.querySelector("[data-theme-toggle]"),
+          r = document.documentElement;
+        let d = matchMedia("(prefers-color-scheme:dark)").matches
+          ? "dark"
+          : "light";
+        r.setAttribute("data-theme", d);
+        if (t)
+          t.addEventListener("click", () => {
+            d = d === "dark" ? "light" : "dark";
+            r.setAttribute("data-theme", d);
+          });
+      })();
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
