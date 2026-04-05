@@ -1331,11 +1331,11 @@
                     ">
                   <span style="font-weight: 600">Users</span>
                   <span style="color: var(--txtm)"
-                    x-text="employees.length + ' / ' + (subscription?.limits?.users === -1 ? '∞' : subscription?.limits?.users)"></span>
+                    x-text="employees.length + ' / ' + (subscription?.limits?.users === -1 ? 'Unlimited' : subscription?.limits?.users)"></span>
                 </div>
                 <div class="prog-wrap" style="height: 8px">
                   <div class="prog-bar"
-                    :style="'width:' + (subscription?.limits?.users === -1 ? 10 : Math.min(employees.length / subscription?.limits?.users * 100, 100)) + '%'"
+                    :style="'width:' + (subscription?.limits?.users === -1 ? 100 : Math.min(employees.length / subscription?.limits?.users * 100, 100)) + '%'"
                     :style="employees.length >= subscription?.limits?.users && subscription?.limits?.users !== -1 ? 'background:var(--err)' : ''">
                   </div>
                 </div>
@@ -1360,11 +1360,11 @@
                     ">
                   <span style="font-weight: 600">Projects</span>
                   <span style="color: var(--txtm)"
-                    x-text="projects.length + ' / ' + (subscription?.limits?.projects === -1 ? '∞' : subscription?.limits?.projects)"></span>
+                    x-text="projects.length + ' / ' + (subscription?.limits?.projects === -1 ? 'Unlimited' : subscription?.limits?.projects)"></span>
                 </div>
                 <div class="prog-wrap" style="height: 8px">
                   <div class="prog-bar"
-                    :style="'width:' + (subscription?.limits?.projects === -1 ? 10 : Math.min(projects.length / subscription?.limits?.projects * 100, 100)) + '%'">
+                    :style="'width:' + (subscription?.limits?.projects === -1 ? 100 : Math.min(projects.length / subscription?.limits?.projects * 100, 100)) + '%'">
                   </div>
                 </div>
                 <div x-show="subscription?.limits?.projects !== -1 && projects.length >= subscription?.limits?.projects"
