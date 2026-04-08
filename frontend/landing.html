@@ -1,331 +1,1387 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WorkHive — Project Management for Growing Teams</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkHive — Project Management SaaS</title>
 
-  <!-- Fonts -->
-  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
 
-  <!-- Alpine.js -->
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ─────────────────────────── TOKENS ─────────────────────────── */
+:root {
+  --text-xs:   clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl:   clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+  --text-2xl:  clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+  --text-3xl:  clamp(2.5rem, 1rem + 4vw, 5rem);
+  --text-hero: clamp(3rem, 0.5rem + 7vw, 7rem);
 
-  <style>
-    /* ── Design Tokens ── */
-    :root {
-      --font-display: 'Cabinet Grotesk', sans-serif;
-      --font-body: 'Inter', sans-serif;
-      --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
-      --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
-      --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
-      --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
-      --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
-      --text-2xl:  clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);
-      --text-3xl:  clamp(2.5rem,   1rem    + 4vw,    5rem);
-      --space-1:0.25rem;--space-2:0.5rem;--space-3:0.75rem;--space-4:1rem;
-      --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
-      --space-12:3rem;--space-16:4rem;--space-20:5rem;--space-24:6rem;
-      --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;
-      --radius-xl:1rem;--radius-full:9999px;
-      --transition: 180ms cubic-bezier(0.16,1,0.3,1);
-    }
-    :root,[data-theme="light"]{
-      --bg:#f7f6f2;--surface:#f9f8f5;--surface-2:#fbfbf9;
-      --surface-offset:#f3f0ec;--divider:#dcd9d5;--border:#d4d1ca;
-      --text:#28251d;--text-muted:#7a7974;--text-faint:#bab9b4;--text-inv:#f9f8f4;
-      --primary:#01696f;--primary-h:#0c4e54;--primary-hi:#cedcd8;
-      --shadow-sm:0 1px 2px oklch(0.2 0.01 80/0.06);
-      --shadow-md:0 4px 12px oklch(0.2 0.01 80/0.08);
-      --shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.12);
-    }
-    [data-theme="dark"]{
-      --bg:#171614;--surface:#1c1b19;--surface-2:#201f1d;
-      --surface-offset:#1d1c1a;--divider:#262523;--border:#393836;
-      --text:#cdccca;--text-muted:#797876;--text-faint:#5a5957;--text-inv:#2b2a28;
-      --primary:#4f98a3;--primary-h:#227f8b;--primary-hi:#313b3b;
-      --shadow-sm:0 1px 2px oklch(0 0 0/0.2);
-      --shadow-md:0 4px 12px oklch(0 0 0/0.3);
-      --shadow-lg:0 12px 32px oklch(0 0 0/0.4);
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-    body{font-family:var(--font-body);font-size:var(--text-base);color:var(--text);background:var(--bg);min-height:100dvh;line-height:1.6}
-    h1,h2,h3,h4{font-family:var(--font-display);text-wrap:balance;line-height:1.15}
-    p,li{text-wrap:pretty;max-width:68ch}
-    a,button,[role="button"]{transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition)}
-    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
-    img{display:block;max-width:100%;height:auto}
-    /* ── Layout ── */
-    .container{max-width:1200px;margin-inline:auto;padding-inline:var(--space-6)}
-    .container--narrow{max-width:960px;margin-inline:auto;padding-inline:var(--space-6)}
-    /* ── Nav ── */
-    nav{position:sticky;top:0;z-index:50;background:oklch(from var(--bg) l c h/0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--divider)}
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);padding:var(--space-4) var(--space-6);max-width:1200px;margin-inline:auto}
-    .nav-logo{display:flex;align-items:center;gap:var(--space-2);font-family:var(--font-display);font-weight:800;font-size:var(--text-lg);color:var(--text);text-decoration:none}
-    .nav-links{display:flex;align-items:center;gap:var(--space-6)}
-    .nav-links a{color:var(--text-muted);text-decoration:none;font-size:var(--text-sm);font-weight:500}
-    .nav-links a:hover{color:var(--text)}
-    .nav-actions{display:flex;align-items:center;gap:var(--space-3)}
-    /* ── Buttons ── */
-    .btn{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-5);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:600;text-decoration:none;white-space:nowrap;cursor:pointer;border:none;font-family:var(--font-body)}
-    .btn-primary{background:var(--primary);color:var(--text-inv)}
-    .btn-primary:hover{background:var(--primary-h)}
-    .btn-ghost{background:transparent;color:var(--text);border:1px solid oklch(from var(--text) l c h/0.15)}
-    .btn-ghost:hover{background:var(--surface-offset)}
-    .btn-lg{padding:var(--space-3) var(--space-8);font-size:var(--text-base);border-radius:var(--radius-lg)}
-    /* ── Hero ── */
-    .hero{padding:var(--space-20) var(--space-6) var(--space-16);text-align:center}
-    .hero-badge{display:inline-flex;align-items:center;gap:var(--space-2);background:var(--primary-hi);color:var(--primary);padding:var(--space-1) var(--space-4);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:600;margin-bottom:var(--space-6);letter-spacing:0.04em;text-transform:uppercase}
-    .hero h1{font-size:var(--text-3xl);font-weight:800;letter-spacing:-0.02em;margin-bottom:var(--space-6);color:var(--text)}
-    .hero p{font-size:var(--text-lg);color:var(--text-muted);margin-inline:auto;margin-bottom:var(--space-8);max-width:54ch}
-    .hero-cta{display:flex;align-items:center;justify-content:center;gap:var(--space-3);flex-wrap:wrap}
-    /* ── Features ── */
-    .features{padding:var(--space-20) var(--space-6)}
-    .section-label{font-size:var(--text-xs);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--primary);margin-bottom:var(--space-3)}
-    .section-title{font-size:var(--text-xl);font-weight:800;color:var(--text);margin-bottom:var(--space-4)}
-    .section-sub{color:var(--text-muted);font-size:var(--text-base);max-width:52ch}
-    .features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:var(--space-6);margin-top:var(--space-12)}
-    .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-8);box-shadow:var(--shadow-sm)}
-    .feature-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-    .feature-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--primary);margin-bottom:var(--space-4)}
-    .feature-card h3{font-size:var(--text-base);font-weight:700;margin-bottom:var(--space-2);color:var(--text)}
-    .feature-card p{font-size:var(--text-sm);color:var(--text-muted);max-width:none}
-    /* ── Pricing ── */
-    .pricing{padding:var(--space-20) var(--space-6);background:var(--surface)}
-    .billing-toggle{display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin:var(--space-8) 0}
-    .billing-toggle button{font-size:var(--text-sm);font-weight:600;padding:var(--space-2) var(--space-5);border-radius:var(--radius-full);border:1px solid var(--border);background:transparent;color:var(--text-muted)}
-    .billing-toggle button.active{background:var(--primary);color:var(--text-inv);border-color:var(--primary)}
-    .pricing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:var(--space-5);margin-top:var(--space-6)}
-    .plan-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-8);display:flex;flex-direction:column;gap:var(--space-4)}
-    .plan-card.popular{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)}
-    .plan-badge{font-size:var(--text-xs);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);background:var(--primary);color:var(--text-inv);width:fit-content}
-    .plan-name{font-size:var(--text-lg);font-weight:800;color:var(--text)}
-    .plan-price{font-size:var(--text-2xl);font-weight:800;font-family:var(--font-display);color:var(--text)}
-    .plan-price span{font-size:var(--text-sm);font-weight:400;color:var(--text-muted)}
-    .plan-features{list-style:none;display:flex;flex-direction:column;gap:var(--space-2);flex:1}
-    .plan-features li{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--text-muted)}
-    .plan-features li svg{color:var(--primary);flex-shrink:0}
-    /* ── Stats ── */
-    .stats{padding:var(--space-16) var(--space-6);border-top:1px solid var(--divider);border-bottom:1px solid var(--divider)}
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--space-8);text-align:center}
-    .stat-number{font-size:var(--text-2xl);font-weight:800;font-family:var(--font-display);color:var(--primary)}
-    .stat-label{font-size:var(--text-sm);color:var(--text-muted);margin-top:var(--space-1)}
-    /* ── CTA Banner ── */
-    .cta-banner{padding:var(--space-20) var(--space-6);text-align:center}
-    .cta-banner h2{font-size:var(--text-2xl);font-weight:800;margin-bottom:var(--space-4)}
-    .cta-banner p{color:var(--text-muted);margin-bottom:var(--space-8);margin-inline:auto}
-    /* ── Footer ── */
-    footer{border-top:1px solid var(--divider);padding:var(--space-10) var(--space-6);color:var(--text-faint);font-size:var(--text-xs);text-align:center}
-    /* ── Theme toggle ── */
-    .theme-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);border:1px solid var(--border);color:var(--text-muted)}
-    .theme-btn:hover{background:var(--surface-offset)}
-    @media(max-width:640px){.nav-links{display:none}.hero h1{font-size:clamp(2rem,8vw,3.5rem)}}
-  </style>
+  --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;--sp5:1.25rem;
+  --sp6:1.5rem;--sp8:2rem;--sp10:2.5rem;--sp12:3rem;--sp16:4rem;
+  --sp20:5rem;--sp24:6rem;--sp32:8rem;
+
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-full:9999px;
+  --ease: cubic-bezier(0.16,1,0.3,1);
+  --ease-exit: cubic-bezier(0.4,0,1,1);
+  --t: 180ms var(--ease);
+
+  --font-display: 'Cabinet Grotesk', sans-serif;
+  --font-body: 'Satoshi', sans-serif;
+
+  --content-narrow:640px;--content-default:960px;--content-wide:1200px;
+}
+
+/* ───── DARK THEME (default) ───── */
+[data-theme="dark"], :root {
+  --bg:#0e0d0c;
+  --surface:#141312;
+  --surface-2:#1a1917;
+  --surface-3:#201f1d;
+  --surface-4:#2a2927;
+  --border:rgba(255,255,255,0.07);
+  --border-strong:rgba(255,255,255,0.13);
+  --text:#e8e6e2;
+  --text-muted:#807e7a;
+  --text-faint:#454340;
+  --primary:#4f98a3;
+  --primary-hover:#3a8390;
+  --primary-glow:rgba(79,152,163,0.15);
+  --primary-glow-strong:rgba(79,152,163,0.25);
+  --gold:#e8af34;
+  --success:#6daa45;
+  --sh-sm:0 1px 3px rgba(0,0,0,0.35);
+  --sh-md:0 4px 16px rgba(0,0,0,0.45);
+  --sh-lg:0 16px 48px rgba(0,0,0,0.55);
+  --sh-xl:0 32px 80px rgba(0,0,0,0.65);
+  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79,152,163,0.18) 0%, transparent 70%);
+  --card-3d-bg: linear-gradient(135deg,rgba(79,152,163,0.08),rgba(232,175,52,0.04));
+}
+
+/* ───── LIGHT THEME ───── */
+[data-theme="light"] {
+  --bg:#f5f4f0;
+  --surface:#faf9f7;
+  --surface-2:#ffffff;
+  --surface-3:#f0ede9;
+  --surface-4:#e8e5e0;
+  --border:rgba(0,0,0,0.07);
+  --border-strong:rgba(0,0,0,0.13);
+  --text:#1e1c18;
+  --text-muted:#6b6965;
+  --text-faint:#b0aead;
+  --primary:#01696f;
+  --primary-hover:#0c4e54;
+  --primary-glow:rgba(1,105,111,0.1);
+  --primary-glow-strong:rgba(1,105,111,0.2);
+  --gold:#d19900;
+  --success:#437a22;
+  --sh-sm:0 1px 3px rgba(0,0,0,0.08);
+  --sh-md:0 4px 16px rgba(0,0,0,0.1);
+  --sh-lg:0 16px 48px rgba(0,0,0,0.12);
+  --sh-xl:0 32px 80px rgba(0,0,0,0.15);
+  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(1,105,111,0.12) 0%, transparent 70%);
+  --card-3d-bg: linear-gradient(135deg,rgba(1,105,111,0.06),rgba(209,153,0,0.04));
+}
+
+/* ─────────────────────────── BASE ─────────────────────────── */
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; scroll-padding-top:var(--sp16); -webkit-font-smoothing:antialiased; }
+body { min-height:100dvh; font-family:var(--font-body); font-size:var(--text-base); color:var(--text); background:var(--bg); overflow-x:hidden; }
+img,svg { display:block; max-width:100%; }
+ul[role="list"] { list-style:none; }
+input,button,select { font:inherit; color:inherit; }
+h1,h2,h3,h4,h5 { text-wrap:balance; line-height:1.1; font-family:var(--font-display); }
+p,li { text-wrap:pretty; }
+button { cursor:pointer; border:none; background:none; }
+a { color:inherit; text-decoration:none; }
+::selection { background:var(--primary-glow-strong); color:var(--text); }
+:focus-visible { outline:2px solid var(--primary); outline-offset:3px; border-radius:var(--r-sm); }
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:0.01ms!important; transition-duration:0.01ms!important; }
+}
+
+/* ─────────────────────────── SCROLL REVEAL ─────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(0.98);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  will-change: opacity, transform;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal-left.visible { opacity:1; transform:translateX(0); }
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.reveal-right.visible { opacity:1; transform:translateX(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.18s; }
+.reveal-delay-3 { transition-delay: 0.26s; }
+.reveal-delay-4 { transition-delay: 0.34s; }
+.reveal-delay-5 { transition-delay: 0.42s; }
+.reveal-delay-6 { transition-delay: 0.50s; }
+
+/* ─────────────────────────── NAV ─────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp4) var(--sp8);
+  background: rgba(14,13,12,0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+[data-theme="light"] nav { background: rgba(245,244,240,0.82); }
+nav.scrolled { box-shadow: var(--sh-md); }
+
+.nav-logo { display:flex; align-items:center; gap:var(--sp2); font-family:var(--font-display); font-size:var(--text-lg); font-weight:700; }
+.logo-icon { width:32px; height:32px; }
+
+.nav-links { display:flex; gap:var(--sp6); list-style:none; }
+.nav-links a { font-size:var(--text-sm); color:var(--text-muted); font-weight:500; transition: color var(--t); }
+.nav-links a:hover { color:var(--text); }
+
+.nav-actions { display:flex; gap:var(--sp3); align-items:center; }
+
+.btn { display:inline-flex; align-items:center; gap:var(--sp2); padding:var(--sp2) var(--sp5); border-radius:var(--r-full); font-size:var(--text-sm); font-weight:600; transition: background var(--t), color var(--t), box-shadow var(--t), transform var(--t); }
+.btn:hover { transform:translateY(-1px); }
+.btn:active { transform:translateY(0); }
+.btn-ghost { color:var(--text-muted); }
+.btn-ghost:hover { color:var(--text); background:var(--surface-3); }
+.btn-primary { background:var(--primary); color:#fff; box-shadow:0 0 0 0 var(--primary-glow); }
+.btn-primary:hover { background:var(--primary-hover); box-shadow:0 4px 20px var(--primary-glow-strong); }
+.btn-outline { border:1px solid var(--border-strong); color:var(--text); }
+.btn-outline:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-glow); }
+
+.theme-toggle { width:36px; height:36px; border-radius:var(--r-full); display:flex; align-items:center; justify-content:center; color:var(--text-muted); transition:color var(--t),background var(--t); }
+.theme-toggle:hover { color:var(--text); background:var(--surface-3); }
+
+/* ─────────────────────────── HERO ─────────────────────────── */
+.hero {
+  min-height: 100dvh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  padding: var(--sp32) var(--sp8) var(--sp20);
+  background: var(--gradient-hero);
+  position: relative; overflow: hidden;
+}
+
+/* Animated grid background */
+.hero-grid {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  animation: grid-drift 20s ease-in-out infinite alternate;
+}
+@keyframes grid-drift {
+  from { transform:translateY(0) scale(1); }
+  to   { transform:translateY(-15px) scale(1.02); }
+}
+
+/* Floating orbs */
+.orb { position:absolute; border-radius:50%; filter:blur(80px); z-index:0; animation:orb-float 8s ease-in-out infinite alternate; pointer-events:none; }
+.orb-1 { width:500px;height:500px; background:var(--primary-glow); top:-100px;left:-100px; animation-delay:0s; }
+.orb-2 { width:400px;height:400px; background:rgba(232,175,52,0.06); bottom:-80px;right:-60px; animation-delay:3s; }
+.orb-3 { width:300px;height:300px; background:rgba(109,170,69,0.05); top:40%;left:60%; animation-delay:5s; }
+@keyframes orb-float {
+  from { transform:translate(0,0) scale(1); }
+  to   { transform:translate(20px,30px) scale(1.1); }
+}
+
+.hero-content { position:relative; z-index:1; max-width:820px; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:var(--sp2);
+  padding:var(--sp1) var(--sp4); border-radius:var(--r-full);
+  border:1px solid var(--border-strong);
+  background:var(--surface-2); color:var(--text-muted);
+  font-size:var(--text-xs); font-weight:600; letter-spacing:0.04em;
+  margin-bottom:var(--sp6);
+  animation: badge-in 0.8s var(--ease) both;
+}
+.badge-dot { width:6px;height:6px;border-radius:50%;background:var(--primary);animation:pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+@keyframes badge-in { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+
+.hero h1 {
+  font-size: var(--text-hero);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--sp6);
+  animation: hero-title-in 1s var(--ease) 0.15s both;
+}
+@keyframes hero-title-in {
+  from{opacity:0;transform:translateY(24px) scale(0.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.hero h1 span { color:var(--primary); }
+
+.hero-sub {
+  font-size: var(--text-lg); color:var(--text-muted); max-width:60ch; margin:0 auto var(--sp10);
+  animation: hero-sub-in 1s var(--ease) 0.3s both;
+}
+@keyframes hero-sub-in { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.hero-actions {
+  display:flex; gap:var(--sp3); justify-content:center; flex-wrap:wrap;
+  animation: hero-cta-in 1s var(--ease) 0.45s both;
+}
+@keyframes hero-cta-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.btn-lg { padding:var(--sp3) var(--sp8); font-size:var(--text-base); }
+
+/* ─── 3D DASHBOARD MOCKUP ─── */
+.hero-mockup-wrap {
+  position: relative; z-index: 1; margin-top: var(--sp16);
+  perspective: 1200px;
+  animation: mockup-in 1.2s var(--ease) 0.6s both;
+}
+@keyframes mockup-in {
+  from{opacity:0;transform:translateY(40px) rotateX(12deg)}
+  to{opacity:1;transform:translateY(0) rotateX(6deg)}
+}
+.hero-mockup-wrap:hover .hero-mockup { transform:rotateX(0deg) rotateY(-2deg) scale(1.01); }
+
+.hero-mockup {
+  width: min(900px, 90vw);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-xl), 0 0 0 1px var(--border), 0 60px 120px rgba(0,0,0,0.5);
+  overflow: hidden;
+  transform: rotateX(6deg) rotateY(0deg);
+  transition: transform 0.6s var(--ease);
+  transform-style: preserve-3d;
+}
+.mockup-bar {
+  display:flex; align-items:center; gap:var(--sp2);
+  padding:var(--sp3) var(--sp4);
+  background:var(--surface-2);
+  border-bottom:1px solid var(--border);
+}
+.mockup-dots { display:flex; gap:6px; }
+.mockup-dots span { width:10px;height:10px;border-radius:50%;background:var(--border-strong); }
+.mockup-dots span:nth-child(1) { background:#ff5f57; }
+.mockup-dots span:nth-child(2) { background:#febc2e; }
+.mockup-dots span:nth-child(3) { background:#28c840; }
+.mockup-url { flex:1; text-align:center; font-size:var(--text-xs); color:var(--text-faint); background:var(--surface-3); padding:var(--sp1) var(--sp4); border-radius:var(--r-full); max-width:300px; margin:0 auto; }
+
+.mockup-body { display:grid; grid-template-columns:200px 1fr; height:360px; }
+.mockup-sidebar {
+  background:var(--surface-2); border-right:1px solid var(--border);
+  padding:var(--sp4);
+}
+.sidebar-nav-item {
+  display:flex; align-items:center; gap:var(--sp2);
+  padding:var(--sp2) var(--sp3); border-radius:var(--r-md);
+  font-size:var(--text-xs); color:var(--text-muted);
+  margin-bottom:var(--sp1);
+}
+.sidebar-nav-item.active { background:var(--primary-glow); color:var(--primary); }
+.sidebar-nav-item .dot { width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6; }
+
+.mockup-main { padding:var(--sp5); overflow:hidden; }
+.mock-kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp3); margin-bottom:var(--sp4); }
+.mock-kpi {
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:var(--sp3);
+}
+.mock-kpi-val { font-size:var(--text-xl); font-weight:700; font-family:var(--font-display); color:var(--text); }
+.mock-kpi-lbl { font-size:var(--text-xs); color:var(--text-muted); margin-top:2px; }
+.mock-kpi-up { font-size:var(--text-xs); color:var(--success); font-weight:600; }
+
+.mock-tasks { }
+.mock-task-row {
+  display:flex; align-items:center; gap:var(--sp3);
+  padding:var(--sp2) var(--sp3); border-radius:var(--r-md);
+  margin-bottom:var(--sp1); font-size:var(--text-xs);
+  background:var(--surface-2); border:1px solid var(--border);
+}
+.task-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+.task-title { flex:1; color:var(--text); }
+.task-badge { padding:2px 8px; border-radius:var(--r-full); font-size:10px; font-weight:600; }
+.badge-done { background:rgba(109,170,69,0.18); color:var(--success); }
+.badge-prog { background:var(--primary-glow); color:var(--primary); }
+.badge-pend { background:rgba(232,175,52,0.15); color:var(--gold); }
+
+/* glowing bottom edge */
+.mockup-glow {
+  height:2px;
+  background: linear-gradient(90deg, transparent, var(--primary), var(--gold), transparent);
+  animation: glow-sweep 3s ease-in-out infinite;
+}
+@keyframes glow-sweep { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+/* ─────────────────────────── LOGO TICKER ─────────────────────────── */
+.ticker-section { padding:var(--sp12) 0; overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--surface); }
+.ticker-label { text-align:center; font-size:var(--text-xs); color:var(--text-faint); letter-spacing:.08em; text-transform:uppercase; margin-bottom:var(--sp6); }
+.ticker-track { display:flex; gap:var(--sp12); animation:ticker 22s linear infinite; width:max-content; }
+.ticker-track:hover { animation-play-state:paused; }
+.ticker-item { display:flex; align-items:center; gap:var(--sp3); color:var(--text-muted); font-size:var(--text-sm); font-weight:600; white-space:nowrap; }
+.ticker-item svg { opacity:.5; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ─────────────────────────── SECTION COMMON ─────────────────────────── */
+section { padding:clamp(var(--sp20),8vw,var(--sp32)) var(--sp8); }
+.container { max-width:var(--content-wide); margin:0 auto; }
+.container-narrow { max-width:var(--content-default); margin:0 auto; }
+
+.section-tag { display:inline-flex; align-items:center; gap:var(--sp2); font-size:var(--text-xs); font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--primary); margin-bottom:var(--sp4); }
+.section-tag::before { content:''; width:20px;height:2px;background:var(--primary);border-radius:var(--r-full); }
+.section-title { font-size:var(--text-2xl); font-weight:800; letter-spacing:-0.02em; margin-bottom:var(--sp4); }
+.section-sub { font-size:var(--text-base); color:var(--text-muted); max-width:52ch; }
+
+/* ─────────────────────────── FEATURES ─────────────────────────── */
+#features { background:var(--bg); }
+.features-header { margin-bottom:var(--sp16); }
+
+.features-grid {
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows:1fr;
+  gap:var(--sp4);
+}
+.feat-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:var(--sp8);
+  position:relative; overflow:hidden;
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+  transform-style:preserve-3d;
+  cursor:default;
+}
+.feat-card::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), var(--primary-glow) 0%, transparent 60%);
+  opacity:0; transition:opacity 0.3s;
+}
+.feat-card:hover::before { opacity:1; }
+.feat-card:hover { border-color:var(--border-strong); box-shadow:var(--sh-lg); transform:translateY(-4px) rotateX(1deg); }
+
+.feat-card.col-8 { grid-column:span 8; }
+.feat-card.col-4 { grid-column:span 4; }
+.feat-card.col-6 { grid-column:span 6; }
+.feat-card.col-5 { grid-column:span 5; }
+.feat-card.col-7 { grid-column:span 7; }
+
+.feat-icon {
+  width:44px;height:44px; border-radius:var(--r-lg);
+  background:var(--primary-glow); color:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:var(--sp5);
+}
+.feat-title { font-size:var(--text-lg); font-weight:700; margin-bottom:var(--sp2); }
+.feat-desc { font-size:var(--text-sm); color:var(--text-muted); line-height:1.6; max-width:44ch; }
+
+/* big card inner visual */
+.feat-visual {
+  margin-top:var(--sp6);
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:var(--sp4);
+  font-size:var(--text-xs);
+}
+
+/* ─────────────────────────── HOW IT WORKS ─────────────────────────── */
+#how { background:var(--surface); }
+.steps-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:var(--sp6); margin-top:var(--sp12); }
+.step-card {
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:var(--sp8);
+  position:relative;
+  transition:transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+  transform-style:preserve-3d;
+}
+.step-card:hover { transform:translateY(-6px) rotateX(2deg) rotateY(1deg); box-shadow:var(--sh-lg); }
+.step-num {
+  font-size:var(--text-3xl); font-weight:800; color:var(--border-strong);
+  font-family:var(--font-display);
+  line-height:1; margin-bottom:var(--sp4);
+  transition:color 0.3s var(--ease);
+}
+.step-card:hover .step-num { color:var(--primary); }
+.step-title { font-size:var(--text-base); font-weight:700; margin-bottom:var(--sp2); }
+.step-desc { font-size:var(--text-sm); color:var(--text-muted); line-height:1.6; }
+.step-connector { display:none; }
+
+/* ─────────────────────────── ROLES ─────────────────────────── */
+#roles { background:var(--bg); }
+.roles-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:var(--sp5); margin-top:var(--sp12); }
+.role-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:var(--sp8);
+  transition:transform 0.4s var(--ease), box-shadow 0.4s, border-color 0.3s;
+  transform-style:preserve-3d;
+}
+.role-card:hover { transform:translateY(-6px) rotateY(3deg); box-shadow:var(--sh-lg); border-color:var(--primary); }
+.role-avatar {
+  width:56px;height:56px;border-radius:var(--r-full);
+  background: var(--card-3d-bg);
+  border:1px solid var(--border-strong);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:var(--sp5); font-size:1.5rem;
+}
+.role-name { font-size:var(--text-lg); font-weight:700; margin-bottom:var(--sp2); }
+.role-desc { font-size:var(--text-sm); color:var(--text-muted); line-height:1.6; margin-bottom:var(--sp5); }
+.role-perms { list-style:none; display:flex; flex-direction:column; gap:var(--sp2); }
+.role-perms li { display:flex; align-items:center; gap:var(--sp2); font-size:var(--text-xs); color:var(--text-muted); }
+.role-perms li::before { content:''; width:5px;height:5px;border-radius:50%;background:var(--primary);flex-shrink:0; }
+
+/* ─────────────────────────── STATS ─────────────────────────── */
+.stats-band {
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:var(--sp16) var(--sp8);
+}
+.stats-inner { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:var(--sp8); max-width:var(--content-wide); margin:0 auto; text-align:center; }
+.stat-num { font-size:var(--text-2xl); font-weight:800; font-family:var(--font-display); color:var(--text); letter-spacing:-0.03em; }
+.stat-num span { color:var(--primary); }
+.stat-label { font-size:var(--text-sm); color:var(--text-muted); margin-top:var(--sp1); }
+
+/* ─────────────────────────── TECH STACK ─────────────────────────── */
+#tech { background:var(--bg); }
+.tech-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:var(--sp4); margin-top:var(--sp12); }
+.tech-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:var(--sp6) var(--sp5);
+  text-align:center;
+  transition:transform 0.35s var(--ease), box-shadow 0.35s, border-color 0.3s;
+  transform-style:preserve-3d;
+}
+.tech-card:hover { transform:translateY(-6px) rotateX(4deg); box-shadow:var(--sh-lg); border-color:var(--primary); }
+.tech-logo { width:40px;height:40px;margin:0 auto var(--sp3); border-radius:var(--r-md); object-fit:contain; }
+.tech-name { font-size:var(--text-sm); font-weight:700; margin-bottom:2px; }
+.tech-role-lbl { font-size:var(--text-xs); color:var(--text-muted); }
+
+/* ─────────────────────────── CTA BAND ─────────────────────────── */
+.cta-band {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-3) 100%);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:var(--sp24) var(--sp8);
+  text-align:center;
+  position:relative; overflow:hidden;
+}
+.cta-band::before {
+  content:'';position:absolute;inset:0;
+  background:var(--gradient-hero);
+  pointer-events:none;
+}
+.cta-band h2 { font-size:var(--text-2xl); font-weight:800; letter-spacing:-0.02em; margin-bottom:var(--sp5); position:relative;z-index:1; }
+.cta-band p { font-size:var(--text-base); color:var(--text-muted); max-width:44ch; margin:0 auto var(--sp8); position:relative;z-index:1; }
+.cta-band .btn-primary { position:relative;z-index:1; font-size:var(--text-base); padding:var(--sp3) var(--sp10); }
+
+/* ─────────────────────────── FOOTER ─────────────────────────── */
+footer {
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:var(--sp16) var(--sp8) var(--sp10);
+}
+.footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:var(--sp12); max-width:var(--content-wide); margin:0 auto; }
+.footer-brand p { font-size:var(--text-sm); color:var(--text-muted); margin-top:var(--sp4); max-width:36ch; line-height:1.6; }
+.footer-col h4 { font-size:var(--text-sm); font-weight:700; margin-bottom:var(--sp5); }
+.footer-col ul { list-style:none; display:flex;flex-direction:column;gap:var(--sp3); }
+.footer-col a { font-size:var(--text-sm); color:var(--text-muted); transition:color var(--t); }
+.footer-col a:hover { color:var(--text); }
+.footer-bottom { border-top:1px solid var(--border); margin-top:var(--sp12); padding-top:var(--sp6); display:flex; justify-content:space-between; align-items:center; max-width:var(--content-wide); margin-left:auto; margin-right:auto; }
+.footer-bottom p { font-size:var(--text-xs); color:var(--text-faint); }
+
+/* ─────────────────────────── RESPONSIVE ─────────────────────────── */
+@media (max-width:900px) {
+  .features-grid { grid-template-columns:1fr; }
+  .feat-card.col-8,.feat-card.col-4,.feat-card.col-6,.feat-card.col-5,.feat-card.col-7 { grid-column:span 1; }
+  .footer-grid { grid-template-columns:1fr 1fr; gap:var(--sp8); }
+  nav { padding:var(--sp3) var(--sp5); }
+  .nav-links { display:none; }
+}
+@media (max-width:640px) {
+  .mockup-body { grid-template-columns:1fr; }
+  .mockup-sidebar { display:none; }
+  .footer-grid { grid-template-columns:1fr; }
+  .hero-actions { flex-direction:column; align-items:center; }
+}
+
+/* ─────────────────────────── PRICING ─────────────────────────── */
+#pricing { background:var(--surface); }
+
+.pricing-toggle-wrap {
+  display:flex; align-items:center; justify-content:center;
+  gap:var(--sp3); margin-top:var(--sp8); margin-bottom:var(--sp12);
+}
+.pricing-toggle-label { font-size:var(--text-sm); color:var(--text-muted); font-weight:500; }
+.pricing-toggle-label.active { color:var(--text); font-weight:700; }
+.toggle-switch {
+  width:44px; height:24px; border-radius:var(--r-full);
+  background:var(--primary); border:none; cursor:pointer;
+  position:relative; transition:background var(--t);
+  flex-shrink:0;
+}
+.toggle-switch::after {
+  content:''; position:absolute; top:3px; left:3px;
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; transition:transform 0.25s var(--ease);
+}
+.toggle-switch.yearly::after { transform:translateX(20px); }
+.annual-badge {
+  display:inline-flex; align-items:center;
+  background:rgba(109,170,69,0.18); color:var(--success);
+  font-size:var(--text-xs); font-weight:700;
+  padding:2px 8px; border-radius:var(--r-full);
+}
+
+.pricing-grid {
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:var(--sp5);
+  align-items:start;
+}
+
+.price-card {
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:var(--sp8);
+  position:relative; overflow:hidden;
+  transition:transform 0.4s var(--ease), box-shadow 0.4s, border-color 0.3s;
+  transform-style:preserve-3d;
+  cursor:default;
+}
+.price-card::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), var(--primary-glow) 0%, transparent 60%);
+  opacity:0; transition:opacity 0.3s; pointer-events:none;
+}
+.price-card:hover::before { opacity:1; }
+.price-card:hover { transform:translateY(-6px) rotateX(1.5deg); box-shadow:var(--sh-lg); border-color:var(--border-strong); }
+
+.price-card.featured {
+  background: linear-gradient(145deg, var(--surface-2), var(--surface-3));
+  border-color:var(--primary);
+  box-shadow: 0 0 0 1px var(--primary), var(--sh-lg), 0 0 40px var(--primary-glow);
+  transform:scale(1.04);
+  z-index:2;
+}
+.price-card.featured:hover { transform:scale(1.04) translateY(-6px) rotateX(1.5deg); }
+
+.popular-badge {
+  position:absolute; top:var(--sp4); right:var(--sp4);
+  background:var(--primary); color:#fff;
+  font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  padding:3px 10px; border-radius:var(--r-full);
+}
+
+.price-plan { font-size:var(--text-sm); font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:var(--sp3); }
+.price-plan-featured { color:var(--primary); }
+
+.price-amount {
+  display:flex; align-items:flex-end; gap:4px;
+  margin-bottom:var(--sp2);
+}
+.price-currency { font-size:var(--text-lg); font-weight:700; color:var(--text-muted); margin-bottom:6px; }
+.price-num {
+  font-size:clamp(2.5rem,5vw,3.5rem); font-weight:800;
+  font-family:var(--font-display); line-height:1; letter-spacing:-0.03em;
+  color:var(--text);
+  transition:opacity 0.3s, transform 0.3s;
+}
+.price-period { font-size:var(--text-sm); color:var(--text-muted); margin-bottom:6px; }
+
+.price-desc { font-size:var(--text-sm); color:var(--text-muted); line-height:1.6; margin-bottom:var(--sp6); min-height:48px; }
+
+.price-divider { height:1px; background:var(--border); margin:var(--sp6) 0; }
+
+.price-features { list-style:none; display:flex; flex-direction:column; gap:var(--sp3); margin-bottom:var(--sp8); }
+.price-features li {
+  display:flex; align-items:flex-start; gap:var(--sp3);
+  font-size:var(--text-sm); color:var(--text-muted); line-height:1.5;
+}
+.feat-check {
+  width:18px; height:18px; border-radius:50%; flex-shrink:0; margin-top:1px;
+  display:flex; align-items:center; justify-content:center;
+}
+.feat-check.yes { background:rgba(109,170,69,0.18); color:var(--success); }
+.feat-check.no  { background:var(--surface-3); color:var(--text-faint); }
+
+.price-cta { width:100%; text-align:center; padding:var(--sp3) var(--sp6); border-radius:var(--r-full); font-size:var(--text-sm); font-weight:700; transition:background var(--t),transform var(--t),box-shadow var(--t); }
+.price-cta:hover { transform:translateY(-2px); }
+.price-cta-outline { border:1px solid var(--border-strong); color:var(--text); }
+.price-cta-outline:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-glow); }
+.price-cta-filled { background:var(--primary); color:#fff; border:none; }
+.price-cta-filled:hover { background:var(--primary-hover); box-shadow:0 4px 20px var(--primary-glow-strong); }
+
+.price-faq { margin-top:var(--sp20); max-width:var(--content-default); margin-left:auto; margin-right:auto; }
+.price-faq h3 { font-size:var(--text-xl); font-weight:800; text-align:center; margin-bottom:var(--sp10); }
+.faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp5); }
+.faq-item {
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:var(--r-xl); padding:var(--sp6);
+  transition:border-color 0.3s, transform 0.35s var(--ease);
+}
+.faq-item:hover { border-color:var(--border-strong); transform:translateY(-3px); }
+.faq-q { font-size:var(--text-sm); font-weight:700; margin-bottom:var(--sp2); }
+.faq-a { font-size:var(--text-sm); color:var(--text-muted); line-height:1.6; }
+
+@media (max-width:900px) {
+  .pricing-grid { grid-template-columns:1fr; }
+  .price-card.featured { transform:scale(1); }
+  .price-card.featured:hover { transform:translateY(-6px); }
+  .faq-grid { grid-template-columns:1fr; }
+}
+
+
+/* ── pricing 3-tab toggle ── */
+.ptab {
+  padding: var(--sp2) var(--sp6);
+  border-radius: var(--r-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 180ms var(--ease);
+  position: relative;
+}
+.ptab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.ptab-badge {
+  display: inline-block;
+  margin-left: var(--sp2);
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--gold);
+  color: #000;
+  border-radius: var(--r-full);
+  padding: 1px 7px;
+  vertical-align: middle;
+  letter-spacing: 0.02em;
+}
+.ptab:not(.active) .ptab-badge { opacity: 0.55; }
+.price-period-note {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--sp1);
+  min-height: 1.2em;
+  transition: opacity 0.2s;
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp5);
+  margin-top: var(--sp12);
+}
+@media(max-width:1100px){ .pricing-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:640px){  .pricing-grid { grid-template-columns: 1fr; } }
+
+</style>
 </head>
+
 <body>
 
-<!-- ── NAV ── -->
-<nav>
-  <div class="nav-inner">
-    <a href="landing.html" class="nav-logo">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="WorkHive logo">
-        <rect x="2" y="2" width="10" height="10" rx="2" fill="currentColor" opacity="0.9"/>
-        <rect x="16" y="2" width="10" height="10" rx="2" fill="currentColor" opacity="0.5"/>
-        <rect x="2" y="16" width="10" height="10" rx="2" fill="currentColor" opacity="0.5"/>
-        <rect x="16" y="16" width="10" height="10" rx="2" fill="currentColor"/>
-      </svg>
-      WorkHive
-    </a>
-    <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#stats">About</a>
-    </div>
-    <div class="nav-actions">
-      <button class="theme-btn" data-theme-toggle aria-label="Toggle theme">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-      </button>
-      <a href="login.html" class="btn btn-ghost">Log in</a>
-      <a href="register.html" class="btn btn-primary">Get started</a>
-    </div>
+<!-- ─────────────── NAV ─────────────── -->
+<nav id="main-nav">
+  <a href="#" class="nav-logo">
+    <svg class="logo-icon" viewBox="0 0 32 32" fill="none" aria-label="WorkHive logo">
+      <rect width="32" height="32" rx="8" fill="var(--primary)" opacity="0.15"/>
+      <path d="M8 10 L16 7 L24 10 L24 22 L16 25 L8 22 Z" stroke="var(--primary)" stroke-width="1.5" fill="none"/>
+      <path d="M16 7 L16 25" stroke="var(--primary)" stroke-width="1.5" opacity="0.5"/>
+      <path d="M8 10 L24 10" stroke="var(--primary)" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="16" cy="16" r="2.5" fill="var(--primary)"/>
+    </svg>
+    WorkHive
+  </a>
+
+  <ul class="nav-links" role="list">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#tech">Tech</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+
+  <div class="nav-actions">
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a href="login.html" class="btn btn-ghost">Login</a>
+    <a href="register.html" class="btn btn-primary">Get Started</a>
   </div>
 </nav>
 
-<!-- ── HERO ── -->
-<section class="hero container--narrow">
-  <div class="hero-badge">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-    Built for Indian Engineering Teams
+<!-- ─────────────── HERO ─────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Multi-Tenant SaaS Platform — Now Live
+    </div>
+
+    <h1>Your team's<br><span>command centre</span></h1>
+
+    <p class="hero-sub">
+      WorkHive gives your team one space to plan projects, assign tasks, track attendance, and measure performance — with role-based access for every level.
+    </p>
+
+    <div class="hero-actions">
+      <a href="register.html" class="btn btn-primary btn-lg">
+        <i data-lucide="zap" width="18" height="18"></i>
+        Start for free
+      </a>
+      <a href="#features" class="btn btn-outline btn-lg">
+        <i data-lucide="play-circle" width="18" height="18"></i>
+        See features
+      </a>
+    </div>
   </div>
-  <h1>Manage projects.<br>Track tasks. Ship faster.</h1>
-  <p>WorkHive gives your team a single space to plan projects, assign tasks, and measure performance — with role-based access for admins, managers, and employees.</p>
-  <div class="hero-cta">
-    <a href="register.html" class="btn btn-primary btn-lg">Start for free</a>
-    <a href="#pricing" class="btn btn-ghost btn-lg">View pricing</a>
+
+  <!-- 3D Dashboard Mockup -->
+  <div class="hero-mockup-wrap">
+    <div class="hero-mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dots"><span></span><span></span><span></span></div>
+        <div class="mockup-url">app.workhive.io/dashboard</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="sidebar-nav-item active"><span class="dot"></span> Dashboard</div>
+          <div class="sidebar-nav-item"><span class="dot"></span> Projects</div>
+          <div class="sidebar-nav-item"><span class="dot"></span> Tasks</div>
+          <div class="sidebar-nav-item"><span class="dot"></span> Attendance</div>
+          <div class="sidebar-nav-item"><span class="dot"></span> Team</div>
+          <div class="sidebar-nav-item"><span class="dot"></span> Analytics</div>
+          <div class="sidebar-nav-item"><span class="dot"></span> Settings</div>
+        </div>
+        <div class="mockup-main">
+          <div class="mock-kpis">
+            <div class="mock-kpi">
+              <div class="mock-kpi-val">24</div>
+              <div class="mock-kpi-lbl">Active Tasks</div>
+              <div class="mock-kpi-up">↑ 12%</div>
+            </div>
+            <div class="mock-kpi">
+              <div class="mock-kpi-val">8</div>
+              <div class="mock-kpi-lbl">Projects</div>
+              <div class="mock-kpi-up">↑ 3</div>
+            </div>
+            <div class="mock-kpi">
+              <div class="mock-kpi-val">96%</div>
+              <div class="mock-kpi-lbl">Attendance</div>
+              <div class="mock-kpi-up">↑ 4%</div>
+            </div>
+          </div>
+          <div class="mock-tasks">
+            <div class="mock-task-row">
+              <span class="task-dot" style="background:var(--primary)"></span>
+              <span class="task-title">Update API documentation</span>
+              <span class="task-badge badge-done">Done</span>
+            </div>
+            <div class="mock-task-row">
+              <span class="task-dot" style="background:var(--gold)"></span>
+              <span class="task-title">Design new onboarding flow</span>
+              <span class="task-badge badge-prog">In Progress</span>
+            </div>
+            <div class="mock-task-row">
+              <span class="task-dot" style="background:var(--text-muted)"></span>
+              <span class="task-title">Set up staging environment</span>
+              <span class="task-badge badge-pend">Pending</span>
+            </div>
+            <div class="mock-task-row">
+              <span class="task-dot" style="background:var(--success)"></span>
+              <span class="task-title">Q3 performance review</span>
+              <span class="task-badge badge-done">Done</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-glow"></div>
+    </div>
   </div>
 </section>
 
-<!-- ── STATS ── -->
-<section class="stats" id="stats">
+<!-- ─────────────── TICKER ─────────────── -->
+<div class="ticker-section">
+  <p class="ticker-label">Built with battle-tested technology</p>
+  <div style="overflow:hidden;mask-image:linear-gradient(90deg,transparent,black 15%,black 85%,transparent)">
+    <div class="ticker-track">
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Node.js</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"/></ellipse></svg>MySQL</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Express.js</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>Alpine.js</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>JWT Auth</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>bcryptjs</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 12h16M12 4v16"/></svg>CORS</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>dotenv</div>
+      <!-- duplicate for seamless loop -->
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Node.js</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 11v6c0 1.66 4.03 3 9 3s9-1.34 9-3v-6"/></svg>MySQL</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Express.js</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>Alpine.js</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>JWT Auth</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>bcryptjs</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M4 12h16M12 4v16"/></svg>CORS</div>
+      <div class="ticker-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>dotenv</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── FEATURES ─────────────── -->
+<section id="features">
   <div class="container">
-    <div class="stats-grid">
-      <div><div class="stat-number">3</div><div class="stat-label">Plan tiers</div></div>
-      <div><div class="stat-number">18</div><div class="stat-label">Table entities</div></div>
-      <div><div class="stat-number">100%</div><div class="stat-label">Multi-tenant isolation</div></div>
-      <div><div class="stat-number">3</div><div class="stat-label">Role-based dashboards</div></div>
+    <div class="features-header reveal">
+      <div class="section-tag">Features</div>
+      <h2 class="section-title">Everything your team needs</h2>
+      <p class="section-sub">From project creation to payroll insights — WorkHive handles the full operational stack so you can focus on shipping.</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Big card -->
+      <div class="feat-card col-8 reveal reveal-left">
+        <div class="feat-icon"><i data-lucide="layout-dashboard" width="22" height="22"></i></div>
+        <h3 class="feat-title">Real-time dashboard</h3>
+        <p class="feat-desc">Every user sees a role-tailored dashboard showing exactly what they need — KPIs, pending tasks, active projects, and team metrics update in real time.</p>
+        <div class="feat-visual">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp3)">
+            <div style="background:var(--surface-3);border-radius:var(--r-md);padding:var(--sp3)">
+              <div style="font-size:var(--text-xl);font-weight:800;color:var(--primary)">24</div>
+              <div style="color:var(--text-muted);font-size:10px;margin-top:2px">Open tasks</div>
+            </div>
+            <div style="background:var(--surface-3);border-radius:var(--r-md);padding:var(--sp3)">
+              <div style="font-size:var(--text-xl);font-weight:800;color:var(--gold)">6</div>
+              <div style="color:var(--text-muted);font-size:10px;margin-top:2px">Due today</div>
+            </div>
+            <div style="background:var(--surface-3);border-radius:var(--r-md);padding:var(--sp3)">
+              <div style="font-size:var(--text-xl);font-weight:800;color:var(--success)">18</div>
+              <div style="color:var(--text-muted);font-size:10px;margin-top:2px">Completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-card col-4 reveal reveal-right">
+        <div class="feat-icon"><i data-lucide="users" width="22" height="22"></i></div>
+        <h3 class="feat-title">Role-based access</h3>
+        <p class="feat-desc">Admin, Manager, Employee, and Owner each see a tailored view with only what they need.</p>
+      </div>
+
+      <div class="feat-card col-4 reveal reveal-left reveal-delay-1">
+        <div class="feat-icon"><i data-lucide="clock" width="22" height="22"></i></div>
+        <h3 class="feat-title">Attendance tracking</h3>
+        <p class="feat-desc">Clock in/out, leave requests, and approvals all in one place. Auto-logged with timestamps.</p>
+      </div>
+
+      <div class="feat-card col-4 reveal reveal-delay-2">
+        <div class="feat-icon"><i data-lucide="folder-kanban" width="22" height="22"></i></div>
+        <h3 class="feat-title">Project management</h3>
+        <p class="feat-desc">Create projects, assign teams, attach files, and track completion rates with live progress.</p>
+      </div>
+
+      <div class="feat-card col-4 reveal reveal-right reveal-delay-3">
+        <div class="feat-icon"><i data-lucide="bar-chart-3" width="22" height="22"></i></div>
+        <h3 class="feat-title">Analytics & reports</h3>
+        <p class="feat-desc">MySQL triggers auto-update KPIs, performance metrics, and monthly reports in real time.</p>
+      </div>
+
+      <div class="feat-card col-7 reveal reveal-left">
+        <div class="feat-icon"><i data-lucide="shield-check" width="22" height="22"></i></div>
+        <h3 class="feat-title">JWT + RBAC security</h3>
+        <p class="feat-desc">Every API endpoint is guarded by JWT authentication and role-based access control middleware. Tenant data is fully isolated — one SaaS, many clients, zero data leaks.</p>
+      </div>
+
+      <div class="feat-card col-5 reveal reveal-right">
+        <div class="feat-icon"><i data-lucide="bell" width="22" height="22"></i></div>
+        <h3 class="feat-title">Notifications</h3>
+        <p class="feat-desc">Employees are notified on task assignments, managers on queries. Nothing falls through the cracks.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── FEATURES ── -->
-<section class="features container" id="features">
-  <div class="section-label">What's included</div>
-  <h2 class="section-title">Everything your team needs</h2>
-  <p class="section-sub">From project creation to task completion — tracked, logged, and analysed automatically.</p>
+<!-- ─────────────── STATS ─────────────── -->
+<div class="stats-band">
+  <div class="stats-inner">
+    <div class="reveal">
+      <div class="stat-num">18<span>+</span></div>
+      <div class="stat-label">Database tables</div>
+    </div>
+    <div class="reveal reveal-delay-1">
+      <div class="stat-num">4<span> roles</span></div>
+      <div class="stat-label">Permission levels</div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="stat-num">100<span>%</span></div>
+      <div class="stat-label">Data isolation per tenant</div>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <div class="stat-num">0<span> leaks</span></div>
+      <div class="stat-label">Cross-tenant exposure</div>
+    </div>
+  </div>
+</div>
 
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon"><i data-lucide="layout-dashboard" width="28" height="28"></i></div>
-      <h3>Role-Based Dashboards</h3>
-      <p>Admin, Manager, and Employee each get a tailored view with only what they need to act on.</p>
+<!-- ─────────────── HOW IT WORKS ─────────────── -->
+<section id="how">
+  <div class="container-narrow">
+    <div class="reveal">
+      <div class="section-tag">Process</div>
+      <h2 class="section-title">Up and running in minutes</h2>
+      <p class="section-sub">WorkHive is built to onboard fast. Register once, get your workspace, and start collaborating.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i data-lucide="users" width="28" height="28"></i></div>
-      <h3>Multi-Tenant Architecture</h3>
-      <p>Every organisation's data is fully isolated. One SaaS, many clients, zero data leaks.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i data-lucide="bar-chart-2" width="28" height="28"></i></div>
-      <h3>ETL Analytics Engine</h3>
-      <p>MySQL triggers automatically update performance metrics, completion rates, and tenant KPIs in real time.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i data-lucide="bell" width="28" height="28"></i></div>
-      <h3>Smart Notifications</h3>
-      <p>Employees get notified on task assignments, managers on queries raised. Nothing falls through the cracks.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i data-lucide="message-square" width="28" height="28"></i></div>
-      <h3>Query Management</h3>
-      <p>Employees raise queries to their manager directly within the platform. Replies are tracked and logged.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon"><i data-lucide="shield-check" width="28" height="28"></i></div>
-      <h3>JWT + RBAC Security</h3>
-      <p>Every API endpoint is guarded by JWT authentication and role-based access control middleware.</p>
+
+    <div class="steps-grid">
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-num">01</div>
+        <h3 class="step-title">Register your workspace</h3>
+        <p class="step-desc">Create a tenant account. The first user automatically becomes Admin with full control.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-num">02</div>
+        <h3 class="step-title">Invite your team</h3>
+        <p class="step-desc">Add members and assign roles — Manager or Employee. Each gets a tailored dashboard view.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-num">03</div>
+        <h3 class="step-title">Create projects & tasks</h3>
+        <p class="step-desc">Managers create projects, assign tasks, and set deadlines. Employees get notified instantly.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-4">
+        <div class="step-num">04</div>
+        <h3 class="step-title">Track & improve</h3>
+        <p class="step-desc">Analytics, attendance reports, and monthly KPIs update automatically via MySQL triggers.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── PRICING ── -->
-<section class="pricing" id="pricing" x-data="{ billing: 'monthly' }">
-  <div class="container--narrow" style="text-align:center">
-    <div class="section-label">Pricing</div>
-    <h2 class="section-title">Simple, predictable pricing</h2>
-    <p class="section-sub" style="margin-inline:auto">Start free, scale as you grow. No hidden fees.</p>
+<!-- ─────────────── ROLES ─────────────── -->
+<section id="roles">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Access Control</div>
+      <h2 class="section-title">Every role has its own view</h2>
+      <p class="section-sub">WorkHive doesn't give everyone everything — each role sees exactly what they need to act on, nothing more.</p>
+    </div>
 
-    <div class="billing-toggle">
-      <button :class="{ active: billing === 'monthly' }" @click="billing='monthly'">Monthly</button>
-      <button :class="{ active: billing === 'annual' }"  @click="billing='annual'">Annual <span style="font-size:0.7em;color:var(--primary)">–20%</span></button>
-      <button :class="{ active: billing === 'lifetime' }" @click="billing='lifetime'">Lifetime</button>
+    <div class="roles-grid">
+      <div class="role-card reveal reveal-delay-1">
+        <div class="role-avatar">🛡️</div>
+        <h3 class="role-name">Admin</h3>
+        <p class="role-desc">Full control within their tenant — users, teams, projects, attendance, and reports.</p>
+        <ul class="role-perms">
+          <li>Manage all users & roles</li>
+          <li>Create teams & projects</li>
+          <li>View all attendance</li>
+          <li>Approve leave requests</li>
+        </ul>
+      </div>
+      <div class="role-card reveal reveal-delay-2">
+        <div class="role-avatar">📋</div>
+        <h3 class="role-name">Manager</h3>
+        <p class="role-desc">Manages their team's tasks, attendance, and queries. Raises issues to admins when needed.</p>
+        <ul class="role-perms">
+          <li>Create & assign tasks</li>
+          <li>View team attendance</li>
+          <li>Approve team leave</li>
+          <li>Reply to queries</li>
+        </ul>
+      </div>
+      <div class="role-card reveal reveal-delay-3">
+        <div class="role-avatar">👤</div>
+        <h3 class="role-name">Employee</h3>
+        <p class="role-desc">Sees their own tasks, clocks in/out, requests leave, and raises queries to their manager.</p>
+        <ul class="role-perms">
+          <li>View assigned tasks</li>
+          <li>Clock in / Clock out</li>
+          <li>Request leave</li>
+          <li>Raise queries</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── TECH ─────────────── -->
+<section id="tech" style="background:var(--surface);">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Technology</div>
+      <h2 class="section-title">Built on solid foundations</h2>
+      <p class="section-sub">A lean, production-ready stack — no bloat, just the right tools for the job.</p>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-card reveal reveal-delay-1">
+        <img src="https://cdn.simpleicons.org/nodedotjs/6daa45" alt="Node.js" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">Node.js</div>
+        <div class="tech-role-lbl">Runtime</div>
+      </div>
+      <div class="tech-card reveal reveal-delay-2">
+        <img src="https://cdn.simpleicons.org/express/4f98a3" alt="Express" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">Express</div>
+        <div class="tech-role-lbl">Framework</div>
+      </div>
+      <div class="tech-card reveal reveal-delay-3">
+        <img src="https://cdn.simpleicons.org/mysql/e8af34" alt="MySQL" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">MySQL</div>
+        <div class="tech-role-lbl">Database</div>
+      </div>
+      <div class="tech-card reveal reveal-delay-4">
+        <img src="https://cdn.simpleicons.org/alpinedotjs/4f98a3" alt="Alpine.js" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">Alpine.js</div>
+        <div class="tech-role-lbl">Frontend</div>
+      </div>
+      <div class="tech-card reveal reveal-delay-1">
+        <img src="https://cdn.simpleicons.org/jsonwebtokens/e8af34" alt="JWT" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">JWT</div>
+        <div class="tech-role-lbl">Auth</div>
+      </div>
+      <div class="tech-card reveal reveal-delay-2">
+        <img src="https://cdn.simpleicons.org/npm/cc3534" alt="bcryptjs" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">bcryptjs</div>
+        <div class="tech-role-lbl">Passwords</div>
+      </div>
+      <div class="tech-card reveal reveal-delay-3">
+        <img src="https://cdn.simpleicons.org/dotenv/6daa45" alt="dotenv" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">dotenv</div>
+        <div class="tech-role-lbl">Config</div>
+      </div>
+      <div class="tech-card reveal reveal-delay-4">
+        <img src="https://cdn.simpleicons.org/git/e8af34" alt="CORS" class="tech-logo" loading="lazy" width="40" height="40">
+        <div class="tech-name">CORS</div>
+        <div class="tech-role-lbl">Cross-origin</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ─────────────── PRICING ─────────────── -->
+<section id="pricing">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-tag" style="justify-content:center">Pricing</div>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-sub" style="margin:0 auto">Start free, scale as you grow. Monthly, Annual, or own it forever with Lifetime.</p>
+    </div>
+
+    <!-- 3-tab billing toggle -->
+    <div class="pricing-toggle-wrap reveal" style="justify-content:center;gap:var(--sp2);flex-wrap:wrap">
+      <button class="ptab active" data-tab="monthly">Monthly</button>
+      <button class="ptab" data-tab="annual">Annual <span class="ptab-badge">Save up to 57%</span></button>
+      <button class="ptab" data-tab="lifetime">Lifetime <span class="ptab-badge">Best value</span></button>
     </div>
 
     <div class="pricing-grid">
-      <!-- Free -->
-      <div class="plan-card">
-        <div class="plan-name">Free</div>
-        <div class="plan-price">₹0 <span>/ forever</span></div>
-        <ul class="plan-features">
-          <li><i data-lucide="check" width="14" height="14"></i> Up to 3 users</li>
-          <li><i data-lucide="check" width="14" height="14"></i> 5 projects</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Basic task tracking</li>
-          <li><i data-lucide="x" width="14" height="14" style="color:var(--text-faint)"></i> Analytics</li>
-          <li><i data-lucide="x" width="14" height="14" style="color:var(--text-faint)"></i> File attachments</li>
+
+      <!-- FREE -->
+      <div class="price-card reveal reveal-delay-1">
+        <div class="price-plan">Free</div>
+        <div class="price-amount">
+          <span class="price-currency">₹</span>
+          <span class="price-num"
+            data-monthly="0" data-monthly-note="forever free"
+            data-annual="0"  data-annual-note="forever free"
+            data-lifetime="0" data-lifetime-note="forever free">0</span>
+          <span class="price-period">/ mo</span>
+        </div>
+        <span class="price-period-note">forever free</span>
+        <p class="price-desc">For individuals and tiny teams getting started.</p>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 3 users</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 5 projects</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Basic attendance tracking</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Role-based access (3 roles)</li>
+          <li><span class="feat-check no"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Analytics dashboard</li>
+          <li><span class="feat-check no"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Custom reports</li>
+          <li><span class="feat-check no"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Priority support</li>
         </ul>
-        <a href="register.html" class="btn btn-ghost" style="justify-content:center">Get started</a>
+        <a href="register.html" class="price-cta price-cta-outline">Get started free</a>
       </div>
 
-      <!-- Pro -->
-      <div class="plan-card popular">
-        <div class="plan-badge">Most Popular</div>
-        <div class="plan-name">Pro</div>
-        <div class="plan-price" x-text="billing==='monthly'?'₹299 / mo':billing==='annual'?'₹2,999 / yr':'₹4,999 once'"></div>
-        <ul class="plan-features">
-          <li><i data-lucide="check" width="14" height="14"></i> Up to 20 users</li>
-          <li><i data-lucide="check" width="14" height="14"></i> 50 projects</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Full task management</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Analytics dashboard</li>
-          <li><i data-lucide="check" width="14" height="14"></i> File attachments</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Notifications</li>
+      <!-- PRO -->
+      <div class="price-card featured reveal reveal-delay-2">
+        <div class="popular-badge">Most popular</div>
+        <div class="price-plan price-plan-featured">Pro</div>
+        <div class="price-amount">
+          <span class="price-currency">₹</span>
+          <span class="price-num"
+            data-monthly="299"   data-monthly-note="per month"
+            data-annual="2,999"  data-annual-note="per year · save ₹589"
+            data-lifetime="4,999" data-lifetime-note="one-time payment">299</span>
+          <span class="price-period js-period">/ mo</span>
+        </div>
+        <span class="price-period-note">per month</span>
+        <p class="price-desc">For growing teams that need full visibility and control.</p>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 20 users</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 50 projects</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Full attendance + leave management</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>All roles (Admin, Manager, Employee)</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Analytics dashboard</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Monthly auto-reports</li>
+          <li><span class="feat-check no"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Dedicated support SLA</li>
         </ul>
-        <a href="register.html?plan=pro" class="btn btn-primary" style="justify-content:center">Choose Pro</a>
+        <a href="register.html" class="price-cta price-cta-filled">Start Pro</a>
       </div>
 
-      <!-- Ultra -->
-      <div class="plan-card">
-        <div class="plan-name">Ultra</div>
-        <div class="plan-price" x-text="billing==='monthly'?'₹999 / mo':billing==='annual'?'₹9,999 / yr':'₹14,999 once'"></div>
-        <ul class="plan-features">
-          <li><i data-lucide="check" width="14" height="14"></i> Up to 100 users</li>
-          <li><i data-lucide="check" width="14" height="14"></i> 200 projects</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Everything in Pro</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Performance metrics</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Monthly reports</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Priority support</li>
+      <!-- ULTRA -->
+      <div class="price-card reveal reveal-delay-3">
+        <div class="price-plan">Ultra</div>
+        <div class="price-amount">
+          <span class="price-currency">₹</span>
+          <span class="price-num"
+            data-monthly="499"   data-monthly-note="per month"
+            data-annual="5,099"  data-annual-note="per year · save ₹889"
+            data-lifetime="14,999" data-lifetime-note="one-time payment">499</span>
+          <span class="price-period js-period">/ mo</span>
+        </div>
+        <span class="price-period-note">per month</span>
+        <p class="price-desc">For scaling teams that need more headroom and priority support.</p>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 100 users</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 200 projects</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Full attendance + leave management</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>All roles + custom permissions</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Advanced analytics + exports</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Custom reports</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Priority support</li>
         </ul>
-        <a href="register.html?plan=ultra" class="btn btn-ghost" style="justify-content:center">Choose Ultra</a>
+        <a href="register.html" class="price-cta price-cta-outline">Get Ultra</a>
       </div>
 
-      <!-- Enterprise -->
-      <div class="plan-card">
-        <div class="plan-name">Enterprise</div>
-        <div class="plan-price">Custom</div>
-        <ul class="plan-features">
-          <li><i data-lucide="check" width="14" height="14"></i> Unlimited users</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Unlimited projects</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Everything in Ultra</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Custom integrations</li>
-          <li><i data-lucide="check" width="14" height="14"></i> Dedicated support</li>
-          <li><i data-lucide="check" width="14" height="14"></i> SLA guarantee</li>
+      <!-- ENTERPRISE -->
+      <div class="price-card reveal reveal-delay-4">
+        <div class="price-plan">Enterprise</div>
+        <div class="price-amount">
+          <span class="price-currency">₹</span>
+          <span class="price-num"
+            data-monthly="999"    data-monthly-note="per month"
+            data-annual="10,099"  data-annual-note="per year · save ₹1,889"
+            data-lifetime="23,999" data-lifetime-note="one-time payment">999</span>
+          <span class="price-period js-period">/ mo</span>
+        </div>
+        <span class="price-period-note">per month</span>
+        <p class="price-desc">For large organisations that need unlimited scale and white-glove onboarding.</p>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Unlimited users</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Unlimited projects</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Full attendance + leave management</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>All roles + custom roles</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Advanced analytics + exports</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Custom reports + API access</li>
+          <li><span class="feat-check yes"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Dedicated support SLA + onboarding</li>
         </ul>
-        <a href="register.html?plan=enterprise" class="btn btn-ghost" style="justify-content:center">Contact us</a>
+        <a href="register.html" class="price-cta price-cta-outline">Contact sales</a>
+      </div>
+
+    </div><!-- /pricing-grid -->
+
+    <!-- FAQ -->
+    <div class="price-faq reveal">
+      <h3>Frequently asked questions</h3>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <p class="faq-q">Can I switch plans later?</p>
+          <p class="faq-a">Yes. Upgrade or downgrade at any time from subscription settings. Changes take effect from the next billing cycle.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">Is my data isolated from other tenants?</p>
+          <p class="faq-a">Completely. Every tenant's data lives in isolated rows scoped by <code style="font-family:monospace;font-size:11px;background:var(--surface-3);padding:1px 5px;border-radius:3px">tenant_id</code>. No queries cross tenant boundaries.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">What happens when I exceed my user limit?</p>
+          <p class="faq-a">You'll be prompted to upgrade before new users can be added. Existing users and data are never affected.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">What does "Lifetime" mean?</p>
+          <p class="faq-a">Pay once, use forever. No recurring charges — your plan stays active for the lifetime of the product with all future updates included.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CTA ── -->
-<section class="cta-banner container--narrow">
-  <h2>Ready to take control of your projects?</h2>
-  <p>Join teams that ship on time with WorkHive. Free to start, no credit card needed.</p>
-  <a href="register.html" class="btn btn-primary btn-lg">Create your free account</a>
-</section>
 
-<!-- ── FOOTER ── -->
+<!-- ─────────────── CTA ─────────────── -->
+<div class="cta-band reveal">
+  <h2>Ready to bring your team together?</h2>
+  <p>Start free. No credit card required. Your data is fully isolated from day one.</p>
+  <a href="register.html" class="btn btn-primary">
+    <i data-lucide="arrow-right" width="18" height="18"></i>
+    Create your workspace
+  </a>
+</div>
+
+<!-- ─────────────── FOOTER ─────────────── -->
 <footer>
-  <p>© 2026 WorkHive · Built with Node.js, MySQL, Alpine.js · All rights reserved</p>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo" style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:700;display:flex;align-items:center;gap:var(--sp2)">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="var(--primary)" opacity="0.15"/><path d="M8 10 L16 7 L24 10 L24 22 L16 25 L8 22 Z" stroke="var(--primary)" stroke-width="1.5" fill="none"/><path d="M16 7 L16 25" stroke="var(--primary)" stroke-width="1.5" opacity="0.5"/><path d="M8 10 L24 10" stroke="var(--primary)" stroke-width="1.5" opacity="0.5"/><circle cx="16" cy="16" r="2.5" fill="var(--primary)"/></svg>
+        WorkHive
+      </div>
+      <p>A multi-tenant SaaS platform built for teams that want clarity, control, and collaboration — in one place.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#roles">Access roles</a></li>
+        <li><a href="#tech">Tech stack</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="register.html">Register</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Developers</h4>
+      <ul>
+        <li><a href="#" target="_blank" rel="noopener noreferrer">API Docs</a></li>
+        <li><a href="#" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        <li><a href="#" target="_blank" rel="noopener noreferrer">README</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 WorkHive. Built with Node.js, MySQL & Alpine.js.</p>
+    <p>Version 1.0.0</p>
+  </div>
 </footer>
 
+<!-- ─────────────── JS ─────────────── -->
 <script>
-  // Theme toggle
-  (function(){
-    const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
-    let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
-    r.setAttribute('data-theme',d);
-    if(t) t.addEventListener('click',()=>{
-      d=d==='dark'?'light':'dark';
-      r.setAttribute('data-theme',d);
+// Init Lucide icons
+lucide.createIcons();
+
+// Theme toggle
+(function(){
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = 'dark'; // default dark
+  function applyTheme(theme) {
+    r.setAttribute('data-theme', theme);
+    if (t) t.innerHTML = theme === 'dark'
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  applyTheme(d);
+  if (t) t.addEventListener('click', () => { d = d === 'dark' ? 'light' : 'dark'; applyTheme(d); });
+})();
+
+// Scroll reveal with IntersectionObserver
+(function(){
+  const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
     });
-  })();
-  // Lucide icons
-  lucide.createIcons();
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+})();
+
+// Nav scroll effect
+(function(){
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+})();
+
+// 3D card mouse tilt
+document.querySelectorAll('.feat-card, .tech-card, .role-card, .step-card, .price-card, .faq-item').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top)  / r.height;
+    const tiltX = (y - 0.5) * -8;
+    const tiltY = (x - 0.5) *  8;
+    card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px)`;
+    card.style.setProperty('--mx', `${x * 100}%`);
+    card.style.setProperty('--my', `${y * 100}%`);
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// Pricing 3-tab toggle
+(function(){
+  const tabs  = document.querySelectorAll('.ptab');
+  const nums  = document.querySelectorAll('.price-num');
+  const notes = document.querySelectorAll('.price-period-note');
+  const periods = document.querySelectorAll('.js-period');
+  let current = 'monthly';
+
+  function switchTab(tab) {
+    current = tab;
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    const periodText = tab === 'monthly' ? '/ mo' : tab === 'annual' ? '/ yr' : 'once';
+    periods.forEach(p => p.textContent = periodText);
+    nums.forEach((n, i) => {
+      const val  = n.dataset[tab] || n.dataset.monthly;
+      const note = n.dataset[tab + 'Note'] || '';
+      n.style.opacity = '0';
+      n.style.transform = 'translateY(8px)';
+      setTimeout(() => {
+        n.textContent = val;
+        n.style.opacity = '1';
+        n.style.transform = 'translateY(0)';
+        if (notes[i]) notes[i].textContent = note;
+      }, 120 + i * 30);
+    });
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+})();
+
 </script>
 </body>
 </html>

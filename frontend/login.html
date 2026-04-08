@@ -1,408 +1,534 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login — WorkHive</title>
-    <link
-      href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-      :root {
-        --font-display: "Cabinet Grotesk", sans-serif;
-        --font-body: "Inter", sans-serif;
-        --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-        --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-        --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-        --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-        --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
-        --space-1: 0.25rem;
-        --space-2: 0.5rem;
-        --space-3: 0.75rem;
-        --space-4: 1rem;
-        --space-5: 1.25rem;
-        --space-6: 1.5rem;
-        --space-8: 2rem;
-        --space-10: 2.5rem;
-        --space-12: 3rem;
-        --radius-sm: 0.375rem;
-        --radius-md: 0.5rem;
-        --radius-lg: 0.75rem;
-        --radius-xl: 1rem;
-        --radius-full: 9999px;
-        --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      :root,
-      [data-theme="light"] {
-        --bg: #f7f6f2;
-        --surface: #f9f8f5;
-        --surface-2: #fbfbf9;
-        --surface-offset: #f3f0ec;
-        --divider: #dcd9d5;
-        --border: #d4d1ca;
-        --text: #28251d;
-        --text-muted: #7a7974;
-        --text-faint: #bab9b4;
-        --text-inv: #f9f8f4;
-        --primary: #01696f;
-        --primary-h: #0c4e54;
-        --primary-hi: #cedcd8;
-        --error: #a12c7b;
-        --shadow-lg: 0 12px 32px oklch(0.2 0.01 80/0.12);
-      }
-      [data-theme="dark"] {
-        --bg: #171614;
-        --surface: #1c1b19;
-        --surface-2: #201f1d;
-        --surface-offset: #1d1c1a;
-        --divider: #262523;
-        --border: #393836;
-        --text: #cdccca;
-        --text-muted: #797876;
-        --text-faint: #5a5957;
-        --text-inv: #2b2a28;
-        --primary: #4f98a3;
-        --primary-h: #227f8b;
-        --primary-hi: #313b3b;
-        --error: #d163a7;
-        --shadow-lg: 0 12px 32px oklch(0 0 0/0.4);
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html {
-        -webkit-font-smoothing: antialiased;
-      }
-      body {
-        font-family: var(--font-body);
-        font-size: var(--text-base);
-        color: var(--text);
-        background: var(--bg);
-        min-height: 100dvh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: var(--space-6);
-      }
-      h1,
-      h2 {
-        font-family: var(--font-display);
-        line-height: 1.2;
-      }
-      a,
-      button {
-        transition:
-          color var(--transition),
-          background var(--transition),
-          border-color var(--transition);
-      }
-      button {
-        cursor: pointer;
-        border: none;
-        font: inherit;
-        color: inherit;
-        background: none;
-      }
-      /* ── Card ── */
-      .login-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-xl);
-        padding: var(--space-10);
-        width: 100%;
-        max-width: 440px;
-        box-shadow: var(--shadow-lg);
-      }
-      .card-header {
-        text-align: center;
-        margin-bottom: var(--space-8);
-      }
-      .logo {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-2);
-        font-family: var(--font-display);
-        font-weight: 800;
-        font-size: var(--text-base);
-        text-decoration: none;
-        color: var(--text);
-        margin-bottom: var(--space-6);
-      }
-      .card-header h1 {
-        font-size: var(--text-xl);
-        font-weight: 800;
-        margin-bottom: var(--space-2);
-      }
-      .card-header p {
-        font-size: var(--text-sm);
-        color: var(--text-muted);
-      }
-      /* ── Field ── */
-      .field {
-        margin-bottom: var(--space-5);
-      }
-      .field label {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: var(--text-xs);
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: var(--space-2);
-      }
-      .field label a {
-        text-transform: none;
-        font-weight: 500;
-        color: var(--primary);
-        text-decoration: none;
-        letter-spacing: 0;
-      }
-      .input-wrap {
-        position: relative;
-      }
-      .field input {
-        width: 100%;
-        padding: var(--space-3) var(--space-4);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        background: var(--surface-2);
-        color: var(--text);
-        font-size: var(--text-sm);
-        font-family: var(--font-body);
-      }
-      .field input:focus {
-        outline: 2px solid var(--primary);
-        outline-offset: 2px;
-        border-color: var(--primary);
-      }
-      .field.has-error input {
-        border-color: var(--error);
-      }
-      .field-error {
-        font-size: var(--text-xs);
-        color: var(--error);
-        margin-top: var(--space-1);
-      }
-      .eye-btn {
-        position: absolute;
-        right: var(--space-3);
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-faint);
-        display: flex;
-        align-items: center;
-      }
-      .eye-btn:hover {
-        color: var(--text-muted);
-      }
-      /* ── Demo pills ── */
-      .demo-section {
-        background: var(--surface-offset);
-        border-radius: var(--radius-lg);
-        padding: var(--space-4);
-        margin-bottom: var(--space-6);
-      }
-      .demo-label {
-        font-size: var(--text-xs);
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--text-faint);
-        margin-bottom: var(--space-3);
-      }
-      .demo-pills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-2);
-      }
-      .demo-pill {
-        font-size: var(--text-xs);
-        padding: var(--space-1) var(--space-3);
-        border-radius: var(--radius-full);
-        border: 1px solid var(--border);
-        background: var(--surface);
-        color: var(--text-muted);
-        cursor: pointer;
-        white-space: nowrap;
-      }
-      .demo-pill:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-      }
-      /* ── Submit ── */
-      .btn-submit {
-        width: 100%;
-        padding: var(--space-3) var(--space-4);
-        background: var(--primary);
-        color: var(--text-inv);
-        border-radius: var(--radius-lg);
-        font-size: var(--text-base);
-        font-weight: 700;
-        font-family: var(--font-display);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--space-2);
-        margin-bottom: var(--space-5);
-      }
-      .btn-submit:hover {
-        background: var(--primary-h);
-      }
-      .btn-submit:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .spinner {
-        width: 18px;
-        height: 18px;
-        border: 2px solid rgba(255, 255, 255, 0.4);
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-      /* ── Error banner ── */
-      .error-banner {
-        background: oklch(from var(--error) l c h/0.1);
-        border: 1px solid var(--error);
-        padding: var(--space-3) var(--space-4);
-        border-radius: var(--radius-md);
-        font-size: var(--text-sm);
-        color: var(--error);
-        margin-bottom: var(--space-4);
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-      }
-      /* ── Footer ── */
-      .card-footer {
-        text-align: center;
-        font-size: var(--text-sm);
-        color: var(--text-muted);
-      }
-      .card-footer a {
-        color: var(--primary);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .divider {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        margin: var(--space-5) 0;
-        color: var(--text-faint);
-        font-size: var(--text-xs);
-      }
-      .divider::before,
-      .divider::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: var(--divider);
-      }
-      /* ── Theme btn ── */
-      .theme-btn-fixed {
-        position: fixed;
-        top: var(--space-4);
-        right: var(--space-4);
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-        color: var(--text-muted);
-        background: var(--surface);
-      }
-      .theme-btn-fixed:hover {
-        background: var(--surface-offset);
-      }
-    </style>
-  </head>
-  <body x-data="loginApp()">
-    <!-- Theme toggle fixed -->
-    <button class="theme-btn-fixed" data-theme-toggle aria-label="Toggle theme">
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <circle cx="12" cy="12" r="5" />
-        <path
-          d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"
-        />
-      </svg>
-    </button>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Login — WorkHive</title>
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ─── TOKENS ─────────────────────────────────────── */
+:root {
+  --font-display:"Cabinet Grotesk",sans-serif;
+  --font-body:"Satoshi",sans-serif;
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
+  --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --sp1:.25rem;--sp2:.5rem;--sp3:.75rem;--sp4:1rem;
+  --sp5:1.25rem;--sp6:1.5rem;--sp8:2rem;--sp10:2.5rem;--sp12:3rem;
+  --r-sm:.375rem;--r-md:.5rem;--r-lg:.75rem;--r-xl:1rem;--r-2xl:1.5rem;--r-full:9999px;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --t:200ms var(--ease);
+}
+[data-theme="dark"],:root {
+  --bg:#0e0d0c;
+  --bg2:#111110;
+  --surface:#141312;
+  --surface2:#1a1917;
+  --surface3:#222120;
+  --surface4:#2a2927;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --text:#e8e6e2;
+  --textm:#807e7a;
+  --textf:#454340;
+  --inv:#111110;
+  --primary:#4f98a3;
+  --primary-h:#3a8390;
+  --primary-g:rgba(79,152,163,0.18);
+  --primary-g2:rgba(79,152,163,0.08);
+  --error:#d163a7;
+  --error-g:rgba(209,99,167,0.12);
+  --warn:#e8af34;
+  --success:#6daa45;
+  --gold:#e8af34;
+}
+[data-theme="light"] {
+  --bg:#f0eeea;
+  --bg2:#f7f6f2;
+  --surface:#f9f8f5;
+  --surface2:#ffffff;
+  --surface3:#f3f0ec;
+  --surface4:#edeae5;
+  --border:rgba(0,0,0,0.08);
+  --border2:rgba(0,0,0,0.14);
+  --text:#1a1916;
+  --textm:#6b6966;
+  --textf:#b0aeaa;
+  --inv:#f9f8f5;
+  --primary:#01696f;
+  --primary-h:#0c4e54;
+  --primary-g:rgba(1,105,111,0.12);
+  --primary-g2:rgba(1,105,111,0.06);
+  --error:#a12c7b;
+  --error-g:rgba(161,44,123,0.1);
+  --warn:#964219;
+  --success:#437a22;
+  --gold:#b07a00;
+}
 
-    <div class="login-card">
-      <!-- Header -->
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
+body {
+  font-family:var(--font-body);
+  font-size:var(--text-base);
+  color:var(--text);
+  background:var(--bg);
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:var(--sp6);
+  overflow-x:hidden;
+  position:relative;
+}
+a,button{transition:color var(--t),background var(--t),border-color var(--t),box-shadow var(--t),transform var(--t);cursor:pointer;}
+button{border:none;font:inherit;color:inherit;background:none;}
+input{font:inherit;color:inherit;}
+
+/* ─── ANIMATED BACKGROUND ─────────────────────────── */
+.bg-scene {
+  position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+}
+.bg-grid {
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:60px 60px;
+  animation:gridDrift 20s linear infinite;
+  opacity:0.6;
+}
+@keyframes gridDrift {
+  0%{background-position:0 0;}
+  100%{background-position:60px 60px;}
+}
+.orb {
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;
+  animation:orbFloat 8s ease-in-out infinite alternate;
+}
+.orb-1{width:500px;height:500px;background:var(--primary);top:-120px;left:-100px;animation-delay:0s;}
+.orb-2{width:400px;height:400px;background:#a86fdf;bottom:-100px;right:-80px;animation-delay:-3s;}
+.orb-3{width:300px;height:300px;background:var(--gold);top:40%;right:20%;animation-delay:-5s;opacity:0.1;}
+@keyframes orbFloat {
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(30px,20px) scale(1.08);}
+}
+
+/* ─── LAYOUT: split left panel + card ────────────────── */
+.page-wrap {
+  position:relative;z-index:1;
+  width:100%;max-width:1000px;
+  display:grid;
+  grid-template-columns:1fr 460px;
+  gap:var(--sp8);
+  align-items:center;
+}
+@media(max-width:860px){
+  .page-wrap{grid-template-columns:1fr;max-width:480px;}
+  .left-panel{display:none;}
+}
+
+/* ─── LEFT PANEL ─────────────────────────────────────── */
+.left-panel {
+  display:flex;flex-direction:column;gap:var(--sp8);
+  animation:panelIn 0.9s var(--ease) both;
+}
+@keyframes panelIn {
+  from{opacity:0;transform:translateX(-40px);}
+  to{opacity:1;transform:translateX(0);}
+}
+.left-brand {
+  display:flex;align-items:center;gap:var(--sp3);
+}
+.brand-name {
+  font-family:var(--font-display);font-weight:900;font-size:var(--text-lg);
+  letter-spacing:-0.02em;color:var(--text);
+}
+.left-headline {
+  font-family:var(--font-display);font-weight:900;
+  font-size:clamp(2rem,1rem + 3vw,3rem);
+  line-height:1.1;letter-spacing:-0.03em;color:var(--text);
+}
+.left-headline span{color:var(--primary);}
+.left-sub {
+  font-size:var(--text-sm);color:var(--textm);line-height:1.7;max-width:38ch;
+}
+/* Feature chips */
+.feat-chips{display:flex;flex-direction:column;gap:var(--sp3);}
+.feat-chip {
+  display:flex;align-items:center;gap:var(--sp3);
+  padding:var(--sp3) var(--sp4);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  font-size:var(--text-sm);color:var(--textm);
+  transform:translateX(0);
+  transition:transform 0.3s var(--ease),border-color 0.3s,box-shadow 0.3s;
+  animation:chipIn 0.7s var(--ease) both;
+}
+.feat-chip:nth-child(1){animation-delay:0.15s;}
+.feat-chip:nth-child(2){animation-delay:0.25s;}
+.feat-chip:nth-child(3){animation-delay:0.35s;}
+.feat-chip:nth-child(4){animation-delay:0.45s;}
+@keyframes chipIn {
+  from{opacity:0;transform:translateX(-20px);}
+  to{opacity:1;transform:translateX(0);}
+}
+.feat-chip-icon {
+  width:32px;height:32px;border-radius:var(--r-md);
+  background:var(--primary-g);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--primary);flex-shrink:0;
+}
+.feat-chip strong{color:var(--text);font-weight:600;}
+
+/* ─── CARD ────────────────────────────────────────────── */
+.login-wrap {
+  perspective:1200px;
+  animation:cardIn 0.8s var(--ease) 0.1s both;
+}
+@keyframes cardIn {
+  from{opacity:0;transform:translateY(30px) rotateX(4deg);}
+  to{opacity:1;transform:translateY(0) rotateX(0deg);}
+}
+.login-card {
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--r-2xl);
+  padding:var(--sp10);
+  width:100%;
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 8px 32px rgba(0,0,0,0.35),
+    0 32px 64px rgba(0,0,0,0.2);
+  position:relative;
+  overflow:hidden;
+  transform-style:preserve-3d;
+  transition:transform 0.4s var(--ease),box-shadow 0.4s;
+}
+/* gloss top edge */
+.login-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
+}
+/* inner glow on hover */
+.login-card::after {
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,0%), var(--primary-g2) 0%, transparent 60%);
+  pointer-events:none;transition:opacity 0.4s;
+}
+
+/* ─── CARD HEADER ─────────────────────────────────────── */
+.card-header{text-align:center;margin-bottom:var(--sp8);}
+.logo {
+  display:inline-flex;align-items:center;gap:var(--sp2);
+  font-family:var(--font-display);font-weight:800;
+  font-size:var(--text-sm);text-decoration:none;color:var(--text);
+  margin-bottom:var(--sp5);
+}
+.card-header h1 {
+  font-family:var(--font-display);font-size:var(--text-xl);
+  font-weight:900;letter-spacing:-0.02em;margin-bottom:var(--sp2);
+}
+.card-header p{font-size:var(--text-sm);color:var(--textm);}
+
+/* ─── SCREEN BADGE ────────────────────────────────────── */
+.screen-badge {
+  display:inline-flex;align-items:center;gap:var(--sp2);
+  padding:var(--sp1) var(--sp3);
+  background:var(--primary-g);
+  border:1px solid rgba(79,152,163,0.25);
+  border-radius:var(--r-full);
+  font-size:var(--text-xs);font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--primary);margin-bottom:var(--sp4);
+}
+.screen-badge-dot {
+  width:6px;height:6px;border-radius:50%;background:var(--primary);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:0.5;transform:scale(0.8);}
+}
+
+/* ─── DEMO SECTION ────────────────────────────────────── */
+.demo-section {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:var(--sp4);
+  margin-bottom:var(--sp6);
+}
+.demo-label {
+  font-size:var(--text-xs);font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--textf);margin-bottom:var(--sp3);
+}
+.demo-pills{display:flex;flex-wrap:wrap;gap:var(--sp2);}
+.demo-pill {
+  font-size:var(--text-xs);font-weight:600;
+  padding:var(--sp1) var(--sp3);
+  border-radius:var(--r-full);
+  border:1px solid var(--border2);
+  background:var(--surface3);
+  color:var(--textm);white-space:nowrap;
+  transition:all 0.2s var(--ease);
+}
+.demo-pill:hover {
+  border-color:var(--primary);color:var(--primary);
+  background:var(--primary-g);transform:translateY(-1px);
+}
+
+/* ─── ERROR BANNER ────────────────────────────────────── */
+.error-banner {
+  background:var(--error-g);
+  border:1px solid var(--error);
+  padding:var(--sp3) var(--sp4);
+  border-radius:var(--r-lg);
+  font-size:var(--text-sm);color:var(--error);
+  margin-bottom:var(--sp4);
+  display:flex;align-items:center;gap:var(--sp2);
+  animation:slideDown 0.3s var(--ease);
+}
+@keyframes slideDown {
+  from{opacity:0;transform:translateY(-8px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ─── FIELDS ──────────────────────────────────────────── */
+.field{margin-bottom:var(--sp5);}
+.field label {
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:var(--text-xs);font-weight:700;
+  letter-spacing:0.05em;text-transform:uppercase;
+  color:var(--textm);margin-bottom:var(--sp2);
+}
+.field label a {
+  text-transform:none;font-weight:600;font-size:var(--text-xs);
+  color:var(--primary);text-decoration:none;letter-spacing:0;
+}
+.field label a:hover{color:var(--primary-h);}
+.input-wrap{position:relative;}
+.field input {
+  width:100%;
+  padding:var(--sp3) var(--sp4);
+  border:1px solid var(--border2);
+  border-radius:var(--r-lg);
+  background:var(--surface2);
+  color:var(--text);
+  font-size:var(--text-sm);
+  font-family:var(--font-body);
+  transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;
+}
+.field input:focus {
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px var(--primary-g);
+  background:var(--surface3);
+}
+.field.has-error input {
+  border-color:var(--error);
+  box-shadow:0 0 0 3px var(--error-g);
+}
+.field-error{font-size:var(--text-xs);color:var(--error);margin-top:var(--sp1);}
+.eye-btn {
+  position:absolute;right:var(--sp3);top:50%;
+  transform:translateY(-50%);color:var(--textf);
+  display:flex;align-items:center;padding:var(--sp1);
+}
+.eye-btn:hover{color:var(--textm);}
+
+/* OTP input */
+.otp-input {
+  text-align:center;letter-spacing:10px;
+  font-size:var(--text-xl);font-weight:900;
+  font-family:var(--font-display);
+}
+
+/* ─── SUBMIT BUTTON ───────────────────────────────────── */
+.btn-submit {
+  width:100%;
+  padding:var(--sp3) var(--sp4);
+  background:var(--primary);
+  color:#fff;
+  border-radius:var(--r-lg);
+  font-size:var(--text-sm);font-weight:700;
+  font-family:var(--font-display);
+  display:flex;align-items:center;justify-content:center;gap:var(--sp2);
+  margin-bottom:var(--sp5);
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 16px var(--primary-g);
+}
+.btn-submit::before {
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.btn-submit:hover{background:var(--primary-h);transform:translateY(-1px);box-shadow:0 8px 24px var(--primary-g);}
+.btn-submit:active{transform:translateY(0);}
+.btn-submit:disabled{opacity:0.55;cursor:not-allowed;transform:none;box-shadow:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+
+/* ─── DIVIDER ─────────────────────────────────────────── */
+.divider {
+  display:flex;align-items:center;gap:var(--sp3);
+  margin:var(--sp5) 0;color:var(--textf);font-size:var(--text-xs);
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2);}
+
+/* ─── APP LOGIN BUTTON (coming soon) ─────────────────────── */
+.app-login-wrap {
+  padding:var(--sp4);
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  text-align:center;
+}
+.app-login-coming {
+  font-size:var(--text-xs);font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--textf);margin-bottom:var(--sp3);
+}
+.app-login-btn {
+  display:flex;align-items:center;justify-content:center;gap:var(--sp3);
+  width:100%;padding:var(--sp3);
+  border:1px solid var(--border2);
+  border-radius:var(--r-md);
+  background:transparent;color:var(--textf);
+  font-size:var(--text-sm);cursor:not-allowed;opacity:0.55;
+}
+.soon-badge {
+  font-size:10px;background:var(--warn);color:#000;
+  padding:2px 7px;border-radius:var(--r-full);font-weight:800;
+  letter-spacing:0.04em;flex-shrink:0;
+}
+
+/* ─── CARD FOOTER ─────────────────────────────────────── */
+.card-footer{text-align:center;font-size:var(--text-sm);color:var(--textm);}
+.card-footer a{color:var(--primary);text-decoration:none;font-weight:700;}
+.card-footer a:hover{color:var(--primary-h);}
+
+/* ─── BACK LINK ───────────────────────────────────────── */
+.back-link {
+  display:inline-flex;align-items:center;gap:var(--sp1);
+  color:var(--primary);font-size:var(--text-sm);
+  text-decoration:none;font-weight:600;
+  margin-top:var(--sp4);
+}
+.back-link:hover{color:var(--primary-h);}
+
+/* ─── THEME TOGGLE ────────────────────────────────────── */
+.theme-btn {
+  position:fixed;top:var(--sp4);right:var(--sp4);
+  width:40px;height:40px;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:var(--r-lg);
+  border:1px solid var(--border2);
+  background:var(--surface);
+  color:var(--textm);
+  box-shadow:0 2px 12px rgba(0,0,0,0.25);
+}
+.theme-btn:hover{background:var(--surface3);color:var(--text);}
+
+/* ─── SCREEN TRANSITIONS ──────────────────────────────── */
+[x-cloak]{display:none!important;}
+.screen-enter {animation:screenIn 0.4s var(--ease) both;}
+@keyframes screenIn {
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ─── SCROLL REVEAL ───────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s var(--ease),transform 0.6s var(--ease);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-24px);transition:opacity 0.6s var(--ease),transform 0.6s var(--ease);}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+
+/* ─── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:500px){
+  .login-card{padding:var(--sp6);}
+  body{padding:var(--sp4);}
+}
+</style>
+</head>
+<body x-data="loginApp()">
+
+<!-- BG SCENE -->
+<div class="bg-scene" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- THEME TOGGLE -->
+<button class="theme-btn" data-theme-toggle aria-label="Toggle theme">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="5"/>
+    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+  </svg>
+</button>
+
+<div class="page-wrap">
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel" aria-hidden="true">
+    <div class="left-brand reveal-left">
+      <svg width="32" height="32" viewBox="0 0 28 28" fill="none" aria-label="WorkHive logo">
+        <rect x="2" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".9"/>
+        <rect x="16" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+        <rect x="2" y="16" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+        <rect x="16" y="16" width="10" height="10" rx="2.5" fill="currentColor"/>
+      </svg>
+      <span class="brand-name">WorkHive</span>
+    </div>
+    <div class="reveal-left" style="animation-delay:0.05s">
+      <h2 class="left-headline">Manage your<br/>team from<br/><span>one place.</span></h2>
+      <p class="left-sub" style="margin-top:1rem">Projects, attendance, leave, queries — every workflow your team needs, purpose-built for clarity.</p>
+    </div>
+    <div class="feat-chips">
+      <div class="feat-chip">
+        <div class="feat-chip-icon"><i data-lucide="users" width="16" height="16"></i></div>
+        <div><strong>Role-based access</strong> — Admin, Manager, Employee</div>
+      </div>
+      <div class="feat-chip">
+        <div class="feat-chip-icon"><i data-lucide="clock" width="16" height="16"></i></div>
+        <div><strong>Attendance tracking</strong> — clock-in, leave, reports</div>
+      </div>
+      <div class="feat-chip">
+        <div class="feat-chip-icon"><i data-lucide="layout-dashboard" width="16" height="16"></i></div>
+        <div><strong>Project management</strong> — tasks, teams, timelines</div>
+      </div>
+      <div class="feat-chip">
+        <div class="feat-chip-icon"><i data-lucide="shield-check" width="16" height="16"></i></div>
+        <div><strong>Fully isolated</strong> — multi-tenant, secure by design</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: CARDS STACK -->
+  <div class="login-wrap" id="card-wrap">
+
+    <!-- ── LOGIN SCREEN ──────────────────────── -->
+    <div class="login-card screen-enter" x-show="screen==='login'" x-cloak id="card-3d">
       <div class="card-header">
         <a href="landing.html" class="logo">
-          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-            <rect
-              x="2"
-              y="2"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-              opacity="0.9"
-            />
-            <rect
-              x="16"
-              y="2"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-              opacity="0.5"
-            />
-            <rect
-              x="2"
-              y="16"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-              opacity="0.5"
-            />
-            <rect
-              x="16"
-              y="16"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-            />
+          <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".9"/>
+            <rect x="16" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="2" y="16" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="16" y="16" width="10" height="10" rx="2.5" fill="currentColor"/>
           </svg>
           WorkHive
         </a>
+        <div class="screen-badge"><div class="screen-badge-dot"></div>Secure login</div>
         <h1>Welcome back</h1>
         <p>Sign in to your organisation account</p>
       </div>
@@ -411,22 +537,14 @@
       <div class="demo-section">
         <div class="demo-label">Quick demo logins</div>
         <div class="demo-pills">
-          <button class="demo-pill" @click="fill('arun@techcorp.com')">
-            Admin — Arun
-          </button>
-          <button class="demo-pill" @click="fill('meena@techcorp.com')">
-            Manager — Meena
-          </button>
-          <button class="demo-pill" @click="fill('raj@techcorp.com')">
-            Employee — Raj
-          </button>
-          <button class="demo-pill" @click="fill('kavya@innovatech.com')">
-            Admin — Kavya
-          </button>
+          <button class="demo-pill" @click="fill('arun@techcorp.com')">Admin — Arun</button>
+          <button class="demo-pill" @click="fill('meena@techcorp.com')">Manager — Meena</button>
+          <button class="demo-pill" @click="fill('raj@techcorp.com')">Employee — Raj</button>
+          <button class="demo-pill" @click="fill('kavya@innovatech.com')">Admin — Kavya</button>
         </div>
       </div>
 
-      <!-- Error banner -->
+      <!-- Error -->
       <div class="error-banner" x-show="apiError" x-cloak>
         <i data-lucide="alert-circle" width="16" height="16"></i>
         <span x-text="apiError"></span>
@@ -434,594 +552,372 @@
 
       <!-- Form -->
       <form @submit.prevent="submitLogin" novalidate>
-        <div class="field" :class="{'has-error': errors.email}">
-          <label for="email">Email address</label>
-          <input
-            id="email"
-            type="email"
-            placeholder="you@company.com"
-            x-model="form.email"
-            autocomplete="email"
-          />
+        <div class="field" :class="{'has-error':errors.email}">
+          <label for="login-email">Email address</label>
+          <input id="login-email" type="email" placeholder="you@company.com"
+            x-model="form.email" autocomplete="email"/>
           <div class="field-error" x-text="errors.email"></div>
         </div>
-
-        <div class="field" :class="{'has-error': errors.password}">
-          <label for="password">
+        <div class="field" :class="{'has-error':errors.password}">
+          <label for="login-password">
             Password
             <a href="#" @click.prevent="goToForgot()">Forgot password?</a>
           </label>
           <div class="input-wrap">
-            <input
-              id="password"
-              :type="showPass ? 'text' : 'password'"
-              placeholder="Your password"
-              x-model="form.password"
-              autocomplete="current-password"
-            />
-            <button
-              type="button"
-              class="eye-btn"
-              @click="showPass=!showPass"
-              aria-label="Toggle password visibility"
-            >
-              <i
-                :data-lucide="showPass ? 'eye-off' : 'eye'"
-                width="16"
-                height="16"
-              ></i>
+            <input id="login-password" :type="showPass?'text':'password'"
+              placeholder="Your password" x-model="form.password" autocomplete="current-password"/>
+            <button type="button" class="eye-btn" @click="showPass=!showPass" aria-label="Toggle password visibility">
+              <i :data-lucide="showPass?'eye-off':'eye'" width="16" height="16"></i>
             </button>
           </div>
           <div class="field-error" x-text="errors.password"></div>
         </div>
-
         <button type="submit" class="btn-submit" :disabled="loading">
           <div class="spinner" x-show="loading"></div>
-          <span x-text="loading ? 'Signing in...' : 'Sign in'"></span>
+          <span x-text="loading?'Signing in...':'Sign in'"></span>
+          <i data-lucide="arrow-right" width="16" height="16" x-show="!loading"></i>
         </button>
       </form>
 
       <div class="divider">or</div>
 
+      <!-- App login (coming soon) -->
+      <div class="app-login-wrap">
+        <div class="app-login-coming">Coming Soon</div>
+        <button disabled class="app-login-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/>
+          </svg>
+          Login via WorkHive App
+          <span class="soon-badge">SOON</span>
+        </button>
+      </div>
+
+      <div class="divider">new here?</div>
       <div class="card-footer">
         Don't have an account? <a href="register.html">Sign up free</a>
       </div>
-
-      <div
-        style="
-          margin-top: var(--sp5);
-          padding: var(--sp4);
-          background: var(--surfoff);
-          border-radius: var(--r-lg);
-          text-align: center;
-        "
-      >
-        <div
-          style="
-            font-size: var(--text-xs);
-            font-weight: 500;
-            color: var(--txtf);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            padding-top: 10px;
-            margin-bottom: var(--sp2);
-          "
-        >
-          Coming Soon
-        </div>
-        <button
-          disabled
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--sp3);
-            width: 100%;
-            padding: var(--sp3);
-            border: 1px solid var(--bdr);
-            border-radius: var(--r-md);
-            background: transparent;
-            color: var(--txtf);
-            font-size: var(--text-sm);
-            cursor: not-allowed;
-            opacity: 0.6;
-          "
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <rect x="5" y="2" width="14" height="20" rx="2" />
-            <circle cx="12" cy="17" r="1" />
-          </svg>
-          Login via ProjexPM App
-          <span
-            style="
-              font-size: 10px;
-              background: var(--warn);
-              color: white;
-              padding: 10px 6px;
-              border-radius: 9999px;
-              font-weight: 700;
-            "
-            >SOON</span
-          >
-        </button>
-      </div>
     </div>
 
-    <!-- 2FA SCREEN -->
-    <div class="login-card" x-show="screen === 'verify2fa'" x-cloak>
+    <!-- ── 2FA SCREEN ─────────────────────────── -->
+    <div class="login-card screen-enter" x-show="screen==='verify2fa'" x-cloak>
       <div class="card-header">
-        <div class="logo">
-                   
-          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-                       
-            <rect
-              x="2"
-              y="2"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-              opacity=".9"
-            />
-                       
-            <rect
-              x="16"
-              y="2"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-              opacity=".5"
-            />
-                       
-            <rect
-              x="2"
-              y="16"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-              opacity=".5"
-            />
-                       
-            <rect
-              x="16"
-              y="16"
-              width="10"
-              height="10"
-              rx="2"
-              fill="currentColor"
-            />
-                     
+        <a href="#" class="logo" @click.prevent="screen='login'">
+          <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".9"/>
+            <rect x="16" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="2" y="16" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="16" y="16" width="10" height="10" rx="2.5" fill="currentColor"/>
           </svg>
-          ProjexPM
+          WorkHive
+        </a>
+        <div class="screen-badge" style="background:rgba(104,211,145,0.12);border-color:rgba(104,211,145,0.3);color:var(--success)">
+          <div class="screen-badge-dot" style="background:var(--success)"></div>
+          Two-step verification
         </div>
         <h1>Check your email</h1>
-        <p>Enter the 6-digit code sent to your secondary email address.</p>
+        <p>Enter the 6-digit code sent to your secondary email</p>
       </div>
-
-      <!-- Error banner -->
       <div class="error-banner" x-show="apiError" x-cloak>
+        <i data-lucide="alert-circle" width="16" height="16"></i>
         <span x-text="apiError"></span>
       </div>
-
       <div class="field">
-        <label for="otp_input">Verification Code</label>
-        <input
-          id="otp_input"
-          type="text"
-          inputmode="numeric"
-          maxlength="6"
-          placeholder="• • • • • •"
-          x-model="twoFaOtp"
-          @keyup.enter="verify2fa()"
-          autocomplete="one-time-code"
-          style="
-            text-align: center;
-            letter-spacing: 10px;
-            font-size: 1.5rem;
-            font-weight: 800;
-          "
-        />
+        <label>Verification Code</label>
+        <input type="text" maxlength="6" placeholder="· · · · · ·"
+          x-model="twoFaOtp" class="otp-input"/>
       </div>
-
-      <button
-        class="btn-submit"
-        style="color: #fff"
-        @click="verify2fa()"
-        :disabled="loading || twoFaOtp.length !== 6"
-        x-text="loading ? 'Verifying...' : 'Verify & Login'"
-      ></button>
-
-      <div
-        style="
-          text-align: center;
-          margin-top: 1rem;
-          font-size: 0.875rem;
-          color: var(--txtm);
-        "
-      >
-        Didn't receive the code?
-        <a href="#" @click.prevent="submitLogin()" style="color: var(--pr)"
-          >Resend</a
-        >
-      </div>
-
-      <div style="text-align: center; margin-top: 0.5rem">
-        <a
-          href="#"
-          @click.prevent="screen='login'; twoFaUserId=null"
-          style="font-size: 0.875rem; color: var(--txtm)"
-          >← Back to login</a
-        >
+      <button class="btn-submit" @click="verify2fa()" :disabled="loading">
+        <div class="spinner" x-show="loading"></div>
+        <span x-text="loading?'Verifying...':'Verify Code'"></span>
+        <i data-lucide="shield-check" width="16" height="16" x-show="!loading"></i>
+      </button>
+      <div class="card-footer">
+        <a href="#" class="back-link" @click.prevent="screen='login'">
+          <i data-lucide="arrow-left" width="14" height="14"></i> Back to login
+        </a>
       </div>
     </div>
 
-    <!-- FORGOT PASSWORD SCREEN -->
-    <div class="login-card" x-show="screen === 'forgot'" x-cloak>
+    <!-- ── FORGOT PASSWORD SCREEN ─────────────── -->
+    <div class="login-card screen-enter" x-show="screen==='forgot'" x-cloak>
       <div class="card-header">
-        <div class="logo"><!-- your SVG logo --></div>
+        <a href="#" class="logo" @click.prevent="screen='login'">
+          <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".9"/>
+            <rect x="16" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="2" y="16" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="16" y="16" width="10" height="10" rx="2.5" fill="currentColor"/>
+          </svg>
+          WorkHive
+        </a>
+        <div class="screen-badge" style="background:rgba(232,175,52,0.12);border-color:rgba(232,175,52,0.3);color:var(--gold)">
+          <div class="screen-badge-dot" style="background:var(--gold)"></div>
+          Password recovery
+        </div>
         <h1>Reset Password</h1>
-        <p>
-          Enter your work email and the secondary contact linked to your account
-        </p>
+        <p>Enter your work email and the secondary contact linked to your account</p>
       </div>
-
-      <div x-show="apiError" class="error-banner">
-        <i data-lucide="alert-circle" style="width: 16px; height: 16px"></i>
+      <div class="error-banner" x-show="apiError" x-cloak>
+        <i data-lucide="alert-circle" width="16" height="16"></i>
         <span x-text="apiError"></span>
       </div>
-
-      <!-- Work email -->
       <div class="field">
-        <label>Work Email <span style="color: var(--err)">*</span></label>
-        <input
-          type="email"
-          placeholder="you@company.com"
-          x-model="forgotWorkEmail"
-          autocomplete="email"
-        />
+        <label>Work Email <span style="color:var(--error)">*</span></label>
+        <input type="email" placeholder="you@company.com"
+          x-model="forgotWorkEmail" autocomplete="email"/>
       </div>
-
-      <!-- Secondary email or phone -->
       <div class="field">
-        <label
-          >Secondary Email or Phone
-          <span style="color: var(--err)">*</span></label
-        >
-        <input
-          type="text"
-          placeholder="personal@gmail.com or +91 98765 43210"
-          x-model="forgotId"
-        />
+        <label>Secondary Email or Phone <span style="color:var(--error)">*</span></label>
+        <input type="text" placeholder="personal@gmail.com or +91 98765 43210"
+          x-model="forgotId"/>
       </div>
-
-      <button
-        class="btn-submit"
-        @click="submitForgot()"
-        :disabled="loading"
-        x-text="loading ? 'Verifying...' : 'Send OTP'"
-      ></button>
-
-      <div class="card-footer" style="margin-top: var(--sp4)">
-        <a href="#" @click.prevent="screen='login'">← Back to login</a>
+      <button class="btn-submit" @click="submitForgot()" :disabled="loading">
+        <div class="spinner" x-show="loading"></div>
+        <span x-text="loading?'Verifying...':'Send OTP'"></span>
+        <i data-lucide="send" width="16" height="16" x-show="!loading"></i>
+      </button>
+      <div class="card-footer">
+        <a href="#" class="back-link" @click.prevent="screen='login'">
+          <i data-lucide="arrow-left" width="14" height="14"></i> Back to login
+        </a>
       </div>
     </div>
 
-    <!-- OTP + NEW PASSWORD SCREEN -->
-    <div class="login-card" x-show="screen === 'otp'" x-cloak>
+    <!-- ── OTP + RESET SCREEN ─────────────────── -->
+    <div class="login-card screen-enter" x-show="screen==='otp'" x-cloak>
       <div class="card-header">
+        <a href="#" class="logo" @click.prevent="screen='forgot'">
+          <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".9"/>
+            <rect x="16" y="2" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="2" y="16" width="10" height="10" rx="2.5" fill="currentColor" opacity=".45"/>
+            <rect x="16" y="16" width="10" height="10" rx="2.5" fill="currentColor"/>
+          </svg>
+          WorkHive
+        </a>
+        <div class="screen-badge" style="background:rgba(104,211,145,0.12);border-color:rgba(104,211,145,0.3);color:var(--success)">
+          <div class="screen-badge-dot" style="background:var(--success)"></div>
+          OTP sent
+        </div>
         <h1>Enter Reset Code</h1>
-        <p style="color: var(--suc)" x-text="successMsg"></p>
+        <p style="color:var(--success)" x-text="successMsg"></p>
       </div>
-      <div x-show="apiError" class="error-banner">
-        <i data-lucide="alert-circle" style="width: 16px; height: 16px"></i
-        ><span x-text="apiError"></span>
+      <div class="error-banner" x-show="apiError" x-cloak>
+        <i data-lucide="alert-circle" width="16" height="16"></i>
+        <span x-text="apiError"></span>
       </div>
       <div class="field">
         <label>OTP Code</label>
-        <input
-          type="text"
-          maxlength="6"
-          placeholder="Enter 6-digit OTP"
-          x-model="otpCode"
-          style="
-            letter-spacing: 4px;
-            text-align: center;
-            font-size: var(--text-lg);
-            font-weight: 700;
-          "
-        />
+        <input type="text" maxlength="6" placeholder="· · · · · ·"
+          x-model="otpCode" class="otp-input"/>
       </div>
       <div class="field">
         <label>New Password</label>
-        <input
-          type="password"
-          placeholder="Min. 8 characters"
-          x-model="newPassword"
-        />
+        <div class="input-wrap">
+          <input :type="showNewPass?'text':'password'"
+            placeholder="Min. 8 characters" x-model="newPassword"/>
+          <button type="button" class="eye-btn" @click="showNewPass=!showNewPass" aria-label="Toggle">
+            <i :data-lucide="showNewPass?'eye-off':'eye'" width="16" height="16"></i>
+          </button>
+        </div>
       </div>
-      <button
-        class="btn-submit"
-        @click="submitReset()"
-        :disabled="loading"
-        x-text="loading ? 'Resetting...' : 'Reset Password'"
-      ></button>
-      <div class="card-footer" style="margin-top: var(--sp4)">
-        <a href="#" @click.prevent="screen='forgot'">← Try again</a>
+      <button class="btn-submit" @click="submitReset()" :disabled="loading">
+        <div class="spinner" x-show="loading"></div>
+        <span x-text="loading?'Resetting...':'Reset Password'"></span>
+        <i data-lucide="key" width="16" height="16" x-show="!loading"></i>
+      </button>
+      <div class="card-footer">
+        <a href="#" class="back-link" @click.prevent="screen='forgot'">
+          <i data-lucide="arrow-left" width="14" height="14"></i> Try again
+        </a>
       </div>
     </div>
 
-    <script>
+  </div><!-- /login-wrap -->
+</div><!-- /page-wrap -->
 
-      const API = 'http://localhost:3000/api';  
+<script>
+function loginApp() {
+  return {
+    screen:'login',
+    form:{email:'',password:''},
+    forgotId:'',
+    otpCode:'',
+    newPassword:'',
+    twoFaUserId:null,
+    twoFaOtp:'',
+    errors:{},
+    loading:false,
+    apiError:'',
+    showPass:false,
+    showNewPass:false,
+    successMsg:'',
+    forgotWorkEmail:'',
 
-      function loginApp() {
-        return {
-          screen: "login", // 'login' | 'forgot' | 'otp' | 'reset' | 'verify2fa'
-          form: { email: "", password: "" },
-          forgotId: "", // secondary email or phone
-          otpCode: "",
-          newPassword: "",
-          twoFaUserId: null,
-          twoFaOtp: "",
-          errors: {},
-          loading: false,
-          apiError: "",
-          showPass: false,
-          successMsg: "",
-          forgotWorkEmail: "",
+    async submitLogin() {
+      this.apiError='';
+      if(!this.validate())return;
+      this.loading=true;
+      try {
+        const res=await fetch('http://localhost:3000/api/auth/login',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email:this.form.email,password:this.form.password})
+        });
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error||'Login failed');
+        if(data.requires_2fa){this.twoFaUserId=data.user_id;this.screen='verify2fa';return;}
+        localStorage.setItem('token',data.data.token);
+        localStorage.setItem('user',JSON.stringify(data.data.user));
+        const role=data.data.user.role;
+        if(role==='admin')location.href='admin/dashboard.html';
+        else if(role==='manager')location.href='manager/dashboard.html';
+        else location.href='employee/dashboard.html';
+      }catch(err){this.apiError=err.message;}
+      finally{this.loading=false;}
+    },
 
-          // ── Login ──────────────────────────────────────────
-          async submitLogin() {
-            this.apiError = "";
-            if (!this.validate()) return;
-            this.loading = true;
+    async verify2fa() {
+      this.apiError='';
+      if(!this.twoFaOtp.trim()){this.apiError='Enter the OTP sent to your secondary email.';return;}
+      this.loading=true;
+      try {
+        const res=await fetch('http://localhost:3000/api/auth/verify-2fa',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({user_id:this.twoFaUserId,otp:this.twoFaOtp})
+        });
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error);
+        localStorage.setItem('token',data.data.token);
+        localStorage.setItem('user',JSON.stringify(data.data.user));
+        const role=data.data.user.role;
+        if(role==='admin')location.href='admin/dashboard.html';
+        else if(role==='manager')location.href='manager/dashboard.html';
+        else location.href='employee/dashboard.html';
+      }catch(err){this.apiError=err.message;}
+      finally{this.loading=false;}
+    },
 
-            try {
-              const res = await fetch(`${API}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  email: this.form.email,
-                  password: this.form.password,
-                }),
-              });
-              const data = await res.json();
+    async submitForgot() {
+      this.apiError='';this.successMsg='';
+      if(!this.forgotWorkEmail.trim()){this.apiError='Please enter your work email.';return;}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.forgotWorkEmail)){this.apiError='Enter a valid work email address.';return;}
+      if(!this.forgotId.trim()){this.apiError='Please enter your secondary email or phone number.';return;}
+      const isEmail=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.forgotId);
+      const isPhone=/^[+]?[\d\s\-()]{7,15}$/.test(this.forgotId);
+      if(!isEmail&&!isPhone){this.apiError='Enter a valid secondary email or phone number.';return;}
+      if(this.forgotId.toLowerCase()===this.forgotWorkEmail.toLowerCase()){this.apiError='Secondary email cannot be the same as your work email.';return;}
+      this.loading=true;
+      try {
+        const res=await fetch('http://localhost:3000/api/auth/forgot-password',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({work_email:this.forgotWorkEmail.trim(),identifier:this.forgotId.trim()})
+        });
+        const data=await res.json();
+        if(!res.ok||!data.success){this.apiError=data.error;return;}
+        this.successMsg=data.message;
+        this.screen='otp';
+      }catch(err){this.apiError='Network error. Please check your connection.';}
+      finally{this.loading=false;}
+    },
 
-              if (!res.ok) throw new Error(data.error || "Login failed");
-
-              if (data.requires_2fa) {
-                // ✅ Store user_id temporarily (NOT the token — no token yet)
-                this.twoFaUserId = data.user_id;
-                this.twoFaOtp = "";
-                this.apiError = "";
-                this.screen = "verify2fa"; // Switch to OTP screen
-                return;
-              }
-
-              // No 2FA — store token and redirect
-              this._handleLoginSuccess(data.data);
-            } catch (err) {
-              this.apiError = err.message;
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async verify2fa() {
-            this.apiError = "";
-            if (!this.twoFaOtp || this.twoFaOtp.length !== 6) {
-              this.apiError =
-                "Enter the 6-digit code sent to your secondary email.";
-              return;
-            }
-            this.loading = true;
-
-            try {
-              const res = await fetch(`${API}/auth/verify-2fa`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  user_id: this.twoFaUserId,
-                  otp: this.twoFaOtp,
-                }),
-              });
-              const data = await res.json();
-
-              if (!res.ok) throw new Error(data.error || "Invalid code.");
-
-              // ✅ NOW store token and redirect — user is fully authenticated
-              this._handleLoginSuccess(data.data);
-            } catch (err) {
-              this.apiError = err.message;
-              this.twoFaOtp = ""; // Clear wrong OTP
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          // Shared redirect logic
-          _handleLoginSuccess(userData) {
-            localStorage.setItem("token", userData.token);
-            localStorage.setItem("user", JSON.stringify(userData.user));
-            const role = userData.user.role;
-            if (role === "admin") location.href = "admin/dashboard.html";
-            else if (role === "manager")
-              location.href = "manager/dashboard.html";
-            else location.href = "employee/dashboard.html";
-          },
-
-          // ── Forgot Password ───────────────────────────────
-          async submitForgot() {
-            this.apiError = "";
-            this.successMsg = "";
-
-            if (!this.forgotWorkEmail.trim()) {
-              this.apiError = "Please enter your work email.";
-              return;
-            }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.forgotWorkEmail)) {
-              this.apiError = "Enter a valid work email address.";
-              return;
-            }
-            if (!this.forgotId.trim()) {
-              this.apiError =
-                "Please enter your secondary email or phone number.";
-              return;
-            }
-
-            const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.forgotId);
-            const isPhone = /^[+]?[\d\s\-()]{7,15}$/.test(this.forgotId);
-            if (!isEmail && !isPhone) {
-              this.apiError = "Enter a valid secondary email or phone number.";
-              return;
-            }
-
-            // ✅ Secondary email must not be same as work email
-            if (
-              this.forgotId.toLowerCase() === this.forgotWorkEmail.toLowerCase()
-            ) {
-              this.apiError =
-                "Secondary email cannot be the same as your work email.";
-              return;
-            }
-
-            this.loading = true;
-            try {
-              const res = await fetch(
-                "http://localhost:3000/api/auth/forgot-password",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    work_email: this.forgotWorkEmail.trim(),
-                    identifier: this.forgotId.trim(),
-                  }),
-                },
-              );
-
-              const data = await res.json();
-
-              if (!res.ok || !data.success) {
-                this.apiError = data.error;
-                return;
-              }
-
-              this.successMsg = data.message;
-              this.screen = "otp";
-            } catch (err) {
-              this.apiError = "Network error. Please check your connection.";
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          goToForgot() {
-            this.apiError = "";
-
-            if (!this.form.email || !this.form.email.trim()) {
-              this.apiError =
-                "Please enter your work email first, then click Forgot Password.";
-              // Highlight the email field
-              document.getElementById("login-email")?.focus();
-              return;
-            }
-
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)) {
-              this.apiError = "Please enter a valid work email address first.";
-              document.getElementById("login-email")?.focus();
-              return;
-            }
-
-            // Pre-fill the forgotId with company email so backend knows which account
-            // But user must recover via secondary email/phone — UI just knows the account
-            this.screen = "forgot";
-            this.apiError = "";
-          },
-
-          // ── Reset Password ────────────────────────────────
-          async submitReset() {
-            this.apiError = "";
-            if (!this.otpCode || !this.newPassword) {
-              this.apiError = "All fields required.";
-              return;
-            }
-            if (this.newPassword.length < 8) {
-              this.apiError = "Password must be at least 8 characters.";
-              return;
-            }
-            this.loading = true;
-            try {
-              const res = await fetch(
-                "http://localhost:3000/api/auth/reset-password",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    identifier: this.forgotId,
-                    otp: this.otpCode,
-                    new_password: this.newPassword,
-                  }),
-                },
-              );
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.error);
-              this.successMsg = data.message + " Redirecting to login...";
-              this.screen = "login";
-              setTimeout(() => {
-                this.successMsg = "";
-              }, 3000);
-            } catch (err) {
-              this.apiError = err.message;
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          validate() {
-            this.errors = {};
-            if (
-              !this.form.email ||
-              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)
-            )
-              this.errors.email = "Valid email required";
-            if (!this.form.password || this.form.password.length < 6)
-              this.errors.password = "Password required";
-            return Object.keys(this.errors).length === 0;
-          },
-
-          fill(email) {
-            this.form.email = email;
-            this.form.password = "password123";
-            this.apiError = "";
-            this.errors = {};
-          },
-        };
+    goToForgot() {
+      this.apiError='';
+      if(!this.form.email||!this.form.email.trim()){
+        this.apiError='Please enter your work email first, then click Forgot Password.';
+        document.getElementById('login-email')?.focus();return;
       }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)){
+        this.apiError='Please enter a valid work email address first.';
+        document.getElementById('login-email')?.focus();return;
+      }
+      this.screen='forgot';this.apiError='';
+    },
 
-      // Theme toggle
-      (function () {
-        const t = document.querySelector("[data-theme-toggle]"),
-          r = document.documentElement;
-        let d = matchMedia("(prefers-color-scheme:dark)").matches
-          ? "dark"
-          : "light";
-        r.setAttribute("data-theme", d);
-        if (t)
-          t.addEventListener("click", () => {
-            d = d === "dark" ? "light" : "dark";
-            r.setAttribute("data-theme", d);
-          });
-      })();
-      lucide.createIcons();
-    </script>
-  </body>
+    async submitReset() {
+      this.apiError='';
+      if(!this.otpCode||!this.newPassword){this.apiError='All fields required.';return;}
+      if(this.newPassword.length<8){this.apiError='Password must be at least 8 characters.';return;}
+      this.loading=true;
+      try {
+        const res=await fetch('http://localhost:3000/api/auth/reset-password',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({identifier:this.forgotId,otp:this.otpCode,new_password:this.newPassword})
+        });
+        const data=await res.json();
+        if(!res.ok)throw new Error(data.error);
+        this.successMsg=data.message+' Redirecting to login...';
+        this.screen='login';
+        setTimeout(()=>{this.successMsg='';},3000);
+      }catch(err){this.apiError=err.message;}
+      finally{this.loading=false;}
+    },
+
+    validate() {
+      this.errors={};
+      if(!this.form.email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email))
+        this.errors.email='Valid email required';
+      if(!this.form.password||this.form.password.length<6)
+        this.errors.password='Password required';
+      return Object.keys(this.errors).length===0;
+    },
+
+    fill(email) {
+      this.form.email=email;
+      this.form.password='password123';
+      this.apiError='';this.errors={};
+    }
+  };
+}
+
+// Theme toggle
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  if(t)t.addEventListener('click',()=>{
+    d=d==='dark'?'light':'dark';
+    r.setAttribute('data-theme',d);
+    t.innerHTML=d==='dark'
+      ?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      :'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  });
+})();
+
+// 3D card tilt
+(function(){
+  const card=document.getElementById('card-3d');
+  if(!card)return;
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width;
+    const y=(e.clientY-r.top)/r.height;
+    const tx=(y-0.5)*-8;
+    const ty=(x-0.5)*8;
+    card.style.transform=`perspective(1000px) rotateX(${tx}deg) rotateY(${ty}deg)`;
+    card.style.setProperty('--mx',`${x*100}%`);
+    card.style.setProperty('--my',`${y*100}%`);
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='perspective(1000px) rotateX(0deg) rotateY(0deg)';
+  });
+})();
+
+// Scroll reveal
+(function(){
+  const els=document.querySelectorAll('.reveal,.reveal-left');
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}});
+  },{threshold:0.12});
+  els.forEach(el=>io.observe(el));
+  // trigger visible immediately for above-fold
+  setTimeout(()=>els.forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top<window.innerHeight)el.classList.add('visible');
+  }),100);
+})();
+
+lucide.createIcons();
+</script>
+</body>
 </html>

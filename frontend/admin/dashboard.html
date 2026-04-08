@@ -768,10 +768,382 @@
     .cal-event.project { background: oklch(from var(--pr) l c h / 0.15); color: var(--pr); }
     .cal-event.task { background: oklch(from var(--warn) l c h / 0.15); color: var(--warn); }
     .cal-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-  </style>
+  
+    /* ══════════════════════════════════════════════════
+       3D DESIGN SYSTEM — WorkHive Admin Dashboard
+       Floating depth · Glow · Particle network · Scroll reveals
+    ══════════════════════════════════════════════════ */
+    :root {
+      --glow-pr:  0 0 24px oklch(from var(--pr) l c h / 0.18);
+      --glow-suc: 0 0 20px oklch(from var(--suc) l c h / 0.16);
+      --glow-err: 0 0 20px oklch(from var(--err) l c h / 0.16);
+    }
+
+    /* Background particle canvas */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ── KPI cards — 3D tilt on hover ── */
+    .kpi {
+      position: relative;
+      border: 1px solid oklch(from var(--pr) l c h / 0.18) !important;
+      transform-style: preserve-3d;
+      transform: perspective(600px) rotateX(0deg) rotateY(0deg) translateZ(0);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1),
+                  box-shadow 0.4s cubic-bezier(0.16,1,0.3,1),
+                  border-color 0.3s ease !important;
+      box-shadow: 0 4px 16px oklch(0.1 0.01 200/0.12),
+                  0 1px 0 oklch(from var(--pr) l c h / 0.08) inset !important;
+      overflow: visible !important;
+    }
+    .kpi::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, oklch(from var(--pr) l c h / 0.06), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .kpi::after {
+      content: '';
+      position: absolute;
+      top: -1px; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, oklch(from var(--pr) l c h / 0.5), transparent);
+      border-radius: var(--r-full);
+    }
+    .kpi:hover {
+      transform: perspective(600px) rotateX(-4deg) rotateY(4deg) translateZ(16px) !important;
+      box-shadow: 0 20px 40px oklch(0.1 0.02 200/0.2),
+                  var(--glow-pr),
+                  0 1px 0 oklch(from var(--pr) l c h / 0.15) inset !important;
+      border-color: oklch(from var(--pr) l c h / 0.5) !important;
+      z-index: 5;
+    }
+    .kpi > * { position: relative; z-index: 1; }
+    .kpi-val {
+      background: linear-gradient(135deg, var(--txt), oklch(from var(--pr) l c h / 0.85));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Section cards — glowing edge ── */
+    .section {
+      position: relative;
+      border: 1px solid oklch(from var(--pr) l c h / 0.14) !important;
+      box-shadow: 0 8px 24px oklch(0.1 0.01 200/0.1),
+                  0 1px 0 oklch(from var(--pr) l c h / 0.07) inset !important;
+      overflow: hidden;
+      transition: box-shadow 0.35s ease, border-color 0.3s ease !important;
+    }
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 10%, oklch(from var(--pr) l c h / 0.35) 50%, transparent 90%);
+    }
+    .section-head {
+      background: linear-gradient(180deg, oklch(from var(--pr) l c h / 0.04), transparent) !important;
+    }
+    .section-head h2::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 1em;
+      background: linear-gradient(180deg, var(--pr), transparent);
+      border-radius: 2px;
+      margin-right: 8px;
+      vertical-align: middle;
+      box-shadow: 0 0 6px var(--pr);
+    }
+
+    /* ── Chart cards — lift on hover ── */
+    .chart-card {
+      position: relative;
+      border: 1px solid oklch(from var(--pr) l c h / 0.16) !important;
+      box-shadow: 0 8px 24px oklch(0.1 0.01 200/0.1) !important;
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1),
+                  box-shadow 0.4s ease,
+                  border-color 0.3s ease !important;
+      overflow: hidden;
+    }
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 5%, oklch(from var(--pr) l c h / 0.4) 50%, transparent 95%);
+    }
+    .chart-card:hover {
+      transform: translateY(-4px) scale(1.01) !important;
+      box-shadow: 0 16px 40px oklch(0.1 0.02 200/0.16), var(--glow-pr) !important;
+      border-color: oklch(from var(--pr) l c h / 0.38) !important;
+    }
+
+    /* ── Glowing progress bars ── */
+    .prog-wrap {
+      box-shadow: inset 0 1px 3px oklch(0 0 0 / 0.15) !important;
+    }
+    .prog-bar {
+      background: linear-gradient(90deg, var(--pr), oklch(from var(--pr) calc(l + 0.1) c calc(h + 20))) !important;
+      box-shadow: 0 0 8px oklch(from var(--pr) l c h / 0.5) !important;
+      position: relative;
+    }
+    .prog-bar::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50%;
+      background: oklch(1 0 0 / 0.25);
+      border-radius: var(--r-full);
+    }
+
+    /* ── Buttons — shimmer sweep ── */
+    .btn-sm {
+      background: linear-gradient(135deg, var(--pr), var(--prh)) !important;
+      box-shadow: 0 4px 12px oklch(from var(--pr) l c h / 0.35),
+                  0 1px 0 oklch(1 0 0 / 0.15) inset !important;
+      transition: transform 0.2s cubic-bezier(0.16,1,0.3,1),
+                  box-shadow 0.2s ease !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-sm::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.15), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.4s ease;
+    }
+    .btn-sm:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px oklch(from var(--pr) l c h / 0.45) !important;
+    }
+    .btn-sm:hover::before { left: 150%; }
+    .btn-sm:active { transform: translateY(0) !important; }
+    .btn-sm.ghost {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    /* ── Sidebar — glowing edge line ── */
+    .sidebar {
+      border-right: 1px solid oklch(from var(--pr) l c h / 0.15) !important;
+      box-shadow: 4px 0 32px oklch(from var(--pr) l c h / 0.07) !important;
+      position: relative;
+      z-index: 20;
+    }
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 1px; height: 100%;
+      background: linear-gradient(180deg, transparent, oklch(from var(--pr) l c h / 0.4), transparent);
+      pointer-events: none;
+    }
+    .sb-item:hover {
+      box-shadow: inset 3px 0 0 oklch(from var(--pr) l c h / 0.4) !important;
+    }
+    .sb-item.active {
+      background: oklch(from var(--pr) l c h / 0.08) !important;
+      box-shadow: inset 3px 0 0 var(--pr),
+                  0 0 12px oklch(from var(--pr) l c h / 0.1) !important;
+    }
+    .sb-logo svg {
+      filter: drop-shadow(0 0 5px oklch(from var(--pr) l c h / 0.5));
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      border-bottom: 1px solid oklch(from var(--pr) l c h / 0.12) !important;
+      box-shadow: 0 2px 20px oklch(from var(--pr) l c h / 0.06) !important;
+      backdrop-filter: blur(12px);
+    }
+    .page-title {
+      text-shadow: 0 0 20px oklch(from var(--pr) l c h / 0.2);
+    }
+
+    /* ── Avatar glow ── */
+    .avatar {
+      box-shadow: 0 0 0 2px oklch(from var(--pr) l c h / 0.25),
+                  var(--glow-pr) !important;
+    }
+
+    /* ── Icon buttons ── */
+    .icon-btn:hover {
+      background: oklch(from var(--pr) l c h / 0.08) !important;
+      box-shadow: var(--glow-pr) !important;
+    }
+
+    /* ── Modal ── */
+    .modal {
+      border: 1px solid oklch(from var(--pr) l c h / 0.2) !important;
+      box-shadow: 0 32px 80px oklch(0 0 0 / 0.35), var(--glow-pr) !important;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px oklch(0 0 0 / 0.2), var(--glow-pr) !important;
+    }
+
+    /* ── Calendar days ── */
+    .cal-day {
+      transition: transform 0.2s cubic-bezier(0.16,1,0.3,1),
+                  box-shadow 0.2s ease,
+                  border-color 0.2s ease !important;
+    }
+    .cal-day:hover {
+      transform: scale(1.03) !important;
+      box-shadow: 0 4px 12px oklch(from var(--pr) l c h / 0.2) !important;
+    }
+
+    /* ── Scrollbar glow ── */
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--pr), var(--prh)) !important;
+    }
+
+    /* ── Table row hover ── */
+    tr:hover td {
+      background: oklch(from var(--pr) l c h / 0.04) !important;
+    }
+
+    /* ── Grid dot overlay on content area ── */
+    .content::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(oklch(from var(--pr) l c h / 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, oklch(from var(--pr) l c h / 0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 80%);
+    }
+    .content > * { position: relative; z-index: 1; }
+
+    /* ── Dark mode glass tint ── */
+    [data-theme="dark"] .kpi {
+      background: linear-gradient(135deg, var(--surf) 0%, oklch(from var(--pr) 0.14 0.02 200) 100%) !important;
+    }
+    [data-theme="dark"] .chart-card {
+      background: linear-gradient(135deg, var(--surf) 0%, oklch(from var(--pr) 0.14 0.02 200) 100%) !important;
+    }
+
+    /* ── Scroll reveal animations (CSS scroll-driven, no layout shift) ── */
+    .fade-in-up    { opacity: 1; }
+    .fade-in-left  { opacity: 1; }
+    .fade-in-right { opacity: 1; }
+
+    @supports (animation-timeline: scroll()) {
+      .fade-in-up {
+        opacity: 0;
+        clip-path: inset(0 0 8% 0);
+        animation: reveal-up linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 85%;
+      }
+      .fade-in-left {
+        opacity: 0;
+        clip-path: inset(0 0 0 8%);
+        animation: reveal-left linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 85%;
+      }
+      .fade-in-right {
+        opacity: 0;
+        clip-path: inset(0 8% 0 0);
+        animation: reveal-right linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 85%;
+      }
+    }
+    @keyframes reveal-up    { to { opacity: 1; clip-path: inset(0 0 0 0); } }
+    @keyframes reveal-left  { to { opacity: 1; clip-path: inset(0 0 0 0); } }
+    @keyframes reveal-right { to { opacity: 1; clip-path: inset(0 0 0 0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in-up, .fade-in-left, .fade-in-right {
+        animation: none !important;
+        opacity: 1 !important;
+        clip-path: none !important;
+      }
+      .kpi, .chart-card { transition: none !important; }
+    }
+</style>
 </head>
 
 <body x-data="adminApp()" @keydown.escape="closeModal()">
+
+  <!-- ══ 3D Particle Network Background ══ -->
+  <canvas id="bg-canvas"></canvas>
+  <script>
+  (function(){
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, P = [];
+    function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    function accent(){ return document.documentElement.getAttribute('data-theme')==='dark' ? 'rgba(79,152,163,' : 'rgba(1,105,111,'; }
+    function init(){
+      P = [];
+      const n = Math.min(50, Math.floor(W * H / 28000));
+      for(let i = 0; i < n; i++)
+        P.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*2+.5,
+                 vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+                 o:Math.random()*.4+.1, p:Math.random()*Math.PI*2 });
+    }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      const a = accent();
+      P.forEach((p, i) => {
+        p.p += .02;
+        const s = 1 + Math.sin(p.p) * .3;
+        for(let j = i+1; j < P.length; j++){
+          const dx = p.x-P[j].x, dy = p.y-P[j].y, d = Math.sqrt(dx*dx+dy*dy);
+          if(d < 140){
+            ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(P[j].x,P[j].y);
+            ctx.strokeStyle = a + (0.12*(1-d/140)).toFixed(3) + ')';
+            ctx.lineWidth = .6; ctx.stroke();
+          }
+        }
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r*s,0,Math.PI*2);
+        ctx.fillStyle = a + p.o + ')'; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r*s*3,0,Math.PI*2);
+        ctx.fillStyle = a + (p.o*.12) + ')'; ctx.fill();
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < 0) p.x = W; if(p.x > W) p.x = 0;
+        if(p.y < 0) p.y = H; if(p.y > H) p.y = 0;
+      });
+      requestAnimationFrame(draw);
+    }
+    resize(); init(); draw();
+    window.addEventListener('resize', () => { resize(); init(); });
+
+    // 3D mouse-tilt on KPI cards
+    document.addEventListener('mousemove', e => {
+      document.querySelectorAll('.kpi').forEach(card => {
+        const r = card.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width/2))  / (r.width  * 3);
+        const dy = (e.clientY - (r.top  + r.height/2)) / (r.height * 3);
+        if(Math.sqrt(dx*dx + dy*dy) < 1)
+          card.style.transform = `perspective(600px) rotateX(${-dy*12}deg) rotateY(${dx*12}deg) translateZ(8px)`;
+        else
+          card.style.transform = '';
+      });
+    });
+  })();
+  </script>
+
   <div id="sub-banner"></div>
   <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
@@ -786,7 +1158,7 @@
     </a>
 
     <div class="sb-section">Main</div>
-    <a class="sb-item" :class="{active:tab==='dashboard'}" @click="tab='dashboard'" href="#">
+    <a class="sb-item" :class="{active:tab==='dashboard'}" @click="tab='dashboard'; $nextTick(() => { renderCharts(); lucide.createIcons(); })" href="#">
       <i data-lucide="layout-dashboard"></i> Dashboard
     </a>
     <a class="sb-item" :class="{active:tab==='projects'}" @click="tab='projects'" href="#">
@@ -808,7 +1180,7 @@
     </a>
 
     <div class="sb-section">Analytics</div>
-    <a class="sb-item" :class="{active:tab==='insights'}" @click="tab='insights'" href="#">
+    <a class="sb-item" :class="{active:tab==='insights'}" @click="tab='insights'; $nextTick(() => { renderCharts(); lucide.createIcons(); })" href="#">
       <i data-lucide="bar-chart-2"></i> Insights
     </a>
     <a class="sb-item" :class="{active:tab==='billing'}" @click="tab='billing'" href="#">
@@ -878,29 +1250,29 @@
     <!-- Content -->
     <div class="content">
       <!-- ── DASHBOARD TAB ── -->
-      <div x-show="tab==='dashboard'">
+      <template x-if="tab==='dashboard'"><div>
         <div>
           <div class="kpi-grid">
-            <div class="kpi">
+            <div class="kpi fade-in-up" style="animation-delay:0s">
               <div class="kpi-label">Total Projects</div>
               <div class="kpi-val" x-text="stats.total_projects ?? '—'"></div>
               <div class="kpi-sub up">
                 ↑ Active: <span x-text="stats.active_projects"></span>
               </div>
             </div>
-            <div class="kpi">
+            <div class="kpi fade-in-up" style="animation-delay:.07s">
               <div class="kpi-label">Total Tasks</div>
               <div class="kpi-val" x-text="stats.total_tasks ?? '—'"></div>
               <div class="kpi-sub" x-text="'Completed: ' + (stats.completed_tasks ?? 0)"></div>
             </div>
-            <div class="kpi">
+            <div class="kpi fade-in-up" style="animation-delay:.14s">
               <div class="kpi-label">Pending Tasks</div>
               <div class="kpi-val" x-text="stats.pending_tasks ?? '—'"></div>
               <div class="kpi-sub down" x-show="stats.pending_tasks > 0">
                 Needs attention
               </div>
             </div>
-            <div class="kpi">
+            <div class="kpi fade-in-up" style="animation-delay:.21s">
               <div class="kpi-label">Teams</div>
               <div class="kpi-val" x-text="stats.total_teams ?? '—'"></div>
               <div class="kpi-sub" x-text="(stats.total_employees ?? 0) + ' employees'"></div>
@@ -908,18 +1280,18 @@
           </div>
 
           <div class="chart-grid">
-            <div class="chart-card">
+            <div class="chart-card fade-in-left">
               <div class="chart-title">Task Status Overview</div>
               <canvas id="taskChart" height="200"></canvas>
             </div>
-            <div class="chart-card">
+            <div class="chart-card fade-in-right">
               <div class="chart-title">Project Status</div>
               <canvas id="projectChart" height="200"></canvas>
             </div>
           </div>
 
           <!-- Recent Projects -->
-          <div class="section">
+          <div class="section fade-in-up">
             <div class="section-head">
               <h2>Recent Projects</h2>
               <button class="btn-sm" @click="openCreateProject()">
@@ -964,6 +1336,7 @@
           </div>
         </div>
       </div>
+      </template>
 
       <!-- ── PROJECTS TAB ── -->
       <template x-if="tab==='projects'">
@@ -1105,98 +1478,116 @@
       <!-- ── ATTENDANCE TAB ── -->
       <template x-if="tab==='attendance'">
         <div>
-          <div class="header" style="display:flex; justify-content:space-between; align-items:center;">
-            <h2>Organization Attendance</h2>
-            <div style="display:flex; align-items:center; gap:var(--sp3)">
-              <label style="font-size:var(--text-sm); font-weight:600; color:var(--txtm)">Timeframe:</label>
+
+          <!-- Header row -->
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp5);">
+            <div>
+              <h2 style="font-size:var(--text-base); font-weight:700; color:var(--txt);">Organization Attendance</h2>
+              <p style="font-size:var(--text-xs); color:var(--txtm); margin-top:2px;">Click any employee row to expand detailed logs</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:var(--sp2);">
+              <label style="font-size:var(--text-xs); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:var(--txtm);">Timeframe</label>
               <select x-model="attendancePeriod" @change="fetchAttendance()"
-                style="padding:4px 8px; border-radius:var(--r-md); border:1px solid var(--div); background:var(--surf); color:var(--txt)">
+                style="padding:var(--sp2) var(--sp3); font-size:var(--text-sm); font-family:var(--font-body); border-radius:var(--r-md); border:1px solid var(--bdr); background:var(--surf2); color:var(--txt); cursor:pointer;">
                 <option value="today">Today</option>
                 <option value="7days">Last 7 Days</option>
                 <option value="30days">Last 30 Days</option>
               </select>
             </div>
           </div>
-          <div class="card" style="padding:var(--sp4);overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:var(--text-sm);">
-              <thead>
-                <tr style="border-bottom:1px solid var(--div);color:var(--txtm);">
-                  <th style="padding:var(--sp2) var(--sp4);width:40px;"></th>
-                  <th style="padding:var(--sp2) var(--sp4)">Employee</th>
-                  <th style="padding:var(--sp2) var(--sp4)">Role</th>
-                  <th style="padding:var(--sp2) var(--sp4)">Team</th>
-                </tr>
-              </thead>
-              <template x-for="emp in groupedAttendanceLogs" :key="emp.user_id">
-                <tbody style="border-bottom:2px solid var(--div);">
-                  <!-- Parent Summary Row -->
-                  <tr style="cursor:pointer;" class="sb-item"
-                    @click="expandedUsers.includes(emp.user_id) ? expandedUsers = expandedUsers.filter(id => id !== emp.user_id) : expandedUsers.push(emp.user_id); $nextTick(() => lucide.createIcons())">
-                    <td style="padding:var(--sp3) var(--sp4)">
-                      <i data-lucide="chevron-down" style="width:18px;height:18px;transition: transform 0.2s;"
-                        :style="expandedUsers.includes(emp.user_id) ? 'transform: rotate(180deg);' : ''"></i>
-                    </td>
-                    <td style="padding:var(--sp3) var(--sp4)">
-                      <div style="font-weight:600;color:var(--txt)" x-text="emp.name"></div>
-                      <div style="font-size:12px;color:var(--txtm)" x-text="emp.email"></div>
-                    </td>
-                    <td style="padding:var(--sp3) var(--sp4);text-transform:capitalize" x-text="emp.role"></td>
-                    <td style="padding:var(--sp3) var(--sp4)" x-text="emp.team || '--'"></td>
+
+          <!-- Main attendance section card -->
+          <div class="section">
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:44px;"></th>
+                    <th>Employee</th>
+                    <th>Role</th>
+                    <th>Team</th>
                   </tr>
-                  <!-- Nested Accordion Details -->
-                  <tr x-show="expandedUsers.includes(emp.user_id)">
-                    <td colspan="4"
-                      style="padding:var(--sp2) var(--sp6) var(--sp6) var(--sp6);background:var(--surfoff)">
-                      <table style="width:100%;border-collapse:collapse;font-size:12px;">
-                        <thead>
-                          <tr style="color:var(--txtm);border-bottom:1px solid var(--div)">
-                            <th style="padding:var(--sp2)">Date</th>
-                            <th style="padding:var(--sp2)">Status</th>
-                            <th style="padding:var(--sp2)">Clock In</th>
-                            <th style="padding:var(--sp2)">Clock Out</th>
-                            <th style="padding:var(--sp2)">Total Hrs</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <template x-for="r in emp.records" :key="r.date">
-                            <tr style="border-bottom:1px solid var(--div)">
-                              <td style="padding:var(--sp2) 0;font-weight:600"
-                                x-text="new Date(r.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })">
-                              </td>
-                              <td style="padding:var(--sp2)">
-                                <span class="badge"
-                                  :class="r.status === 'present' ? 'badge-completed' : (r.status === 'late' ? 'badge-pending' : (r.clock_in ? 'badge-in_progress' : 'badge-low'))"
-                                  x-text="r.status || 'Not checked in'"></span>
-                              </td>
-                              <td style="padding:var(--sp2)"
-                                x-text="r.clock_in ? new Date(r.clock_in).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '--'">
-                              </td>
-                              <td style="padding:var(--sp2)"
-                                x-text="r.clock_out ? new Date(r.clock_out).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '--'">
-                              </td>
-                              <td style="padding:var(--sp2);font-weight:700"
-                                x-text="r.clock_out ? ((new Date(r.clock_out) - new Date(r.clock_in)) / 3600000).toFixed(1) + ' hrs' : '--'">
-                              </td>
-                            </tr>
-                          </template>
-                          <tr x-show="emp.records.length === 0">
-                            <td colspan="5" style="padding:var(--sp4);text-align:center;color:var(--txtm)">No logs found
-                              for selected timeframe.</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                </thead>
+
+                <template x-for="emp in groupedAttendanceLogs" :key="emp.user_id">
+                  <tbody>
+                    <!-- Summary row -->
+                    <tr style="cursor:pointer;"
+                      @click="expandedUsers.includes(emp.user_id) ? expandedUsers = expandedUsers.filter(id => id !== emp.user_id) : expandedUsers.push(emp.user_id); $nextTick(() => lucide.createIcons())">
+                      <td style="text-align:center; width:44px;">
+                        <i data-lucide="chevron-right"
+                          style="width:15px; height:15px; color:var(--txtm); transition:transform 0.2s ease; display:inline-block;"
+                          :style="expandedUsers.includes(emp.user_id) ? 'transform:rotate(90deg); color:var(--pr);' : ''"></i>
+                      </td>
+                      <td>
+                        <div style="display:flex; align-items:center; gap:var(--sp3);">
+                          <div class="avatar" style="width:30px; height:30px; font-size:11px; flex-shrink:0;" x-text="emp.name?.[0] ?? '?'"></div>
+                          <div>
+                            <div style="font-weight:600; color:var(--txt); font-size:var(--text-sm);" x-text="emp.name"></div>
+                            <div style="font-size:var(--text-xs); color:var(--txtm);" x-text="emp.email"></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td><span class="badge" :class="'badge-' + emp.role" x-text="emp.role"></span></td>
+                      <td style="font-size:var(--text-sm); color:var(--txtm);" x-text="emp.team || 'Unassigned'"></td>
+                    </tr>
+
+                    <!-- Expanded detail row -->
+                    <tr x-show="expandedUsers.includes(emp.user_id)">
+                      <td colspan="4" style="padding:0;">
+                        <div style="background:var(--surfoff); padding:var(--sp3) var(--sp5) var(--sp5); border-top:1px solid var(--div);">
+                          <table style="width:100%; border-collapse:collapse;">
+                            <thead>
+                              <tr>
+                                <th style="padding:var(--sp2) var(--sp3); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--txtm); border-bottom:1px solid var(--div); text-align:left;">Date</th>
+                                <th style="padding:var(--sp2) var(--sp3); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--txtm); border-bottom:1px solid var(--div); text-align:left;">Status</th>
+                                <th style="padding:var(--sp2) var(--sp3); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--txtm); border-bottom:1px solid var(--div); text-align:left;">Clock In</th>
+                                <th style="padding:var(--sp2) var(--sp3); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--txtm); border-bottom:1px solid var(--div); text-align:left;">Clock Out</th>
+                                <th style="padding:var(--sp2) var(--sp3); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--txtm); border-bottom:1px solid var(--div); text-align:right;">Total Hrs</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <template x-for="r in emp.records" :key="r.date">
+                                <tr style="border-bottom:1px solid var(--div);">
+                                  <td style="padding:var(--sp2) var(--sp3); font-size:var(--text-xs); font-weight:600; color:var(--txt);"
+                                    x-text="new Date(r.date).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })"></td>
+                                  <td style="padding:var(--sp2) var(--sp3);">
+                                    <span class="badge"
+                                      :class="r.status === 'present' ? 'badge-completed' : (r.status === 'late' ? 'badge-pending' : (r.clock_in ? 'badge-on_hold' : 'badge-low'))"
+                                      x-text="r.status || 'Absent'"></span>
+                                  </td>
+                                  <td style="padding:var(--sp2) var(--sp3); font-size:var(--text-xs); color:var(--txt); font-variant-numeric:tabular-nums;"
+                                    x-text="r.clock_in ? new Date(r.clock_in).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '—'"></td>
+                                  <td style="padding:var(--sp2) var(--sp3); font-size:var(--text-xs); color:var(--txt); font-variant-numeric:tabular-nums;"
+                                    x-text="r.clock_out ? new Date(r.clock_out).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '—'"></td>
+                                  <td style="padding:var(--sp2) var(--sp3); font-size:var(--text-xs); font-weight:700; color:var(--txt); font-variant-numeric:tabular-nums; text-align:right;"
+                                    x-text="r.clock_out ? ((new Date(r.clock_out) - new Date(r.clock_in)) / 3600000).toFixed(1) + ' hrs' : '—'"></td>
+                                </tr>
+                              </template>
+                              <tr x-show="emp.records.length === 0">
+                                <td colspan="5" style="padding:var(--sp5); text-align:center; color:var(--txtm); font-size:var(--text-xs);">No logs found for the selected timeframe.</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+
+                <!-- Empty state -->
+                <tbody>
+                  <tr x-show="groupedAttendanceLogs.length === 0">
+                    <td colspan="4" style="padding:var(--sp10); text-align:center; color:var(--txtm);">
+                      <i data-lucide="calendar-x" style="width:32px; height:32px; margin:0 auto var(--sp3); display:block; color:var(--txtf);"></i>
+                      <div style="font-size:var(--text-sm); margin-top:var(--sp2);">No attendance data available for the selected timeframe.</div>
                     </td>
                   </tr>
                 </tbody>
-              </template>
-              <tbody>
-                <tr x-show="attendanceLogs.length === 0">
-                  <td colspan="7" style="padding:var(--sp6);text-align:center;color:var(--txtm)">No organization
-                    attendance data available for today.</td>
-                </tr>
-              </tbody>
-            </table>
+              </table>
+            </div>
           </div>
+
         </div>
       </template>
 
@@ -1254,33 +1645,33 @@
       </template>
 
       <!-- ── INSIGHTS TAB ── -->
-      <div x-show="tab==='insights'">
+      <template x-if="tab==='insights'"><div>
         <div>
           <div class="kpi-grid">
-            <div class="kpi">
+            <div class="kpi fade-in-up" style="animation-delay:0s">
               <div class="kpi-label">Completion Rate</div>
               <div class="kpi-val"
                 x-text="stats.total_tasks > 0 ? Math.round(stats.completed_tasks/stats.total_tasks*100)+'%' : '0%'">
               </div>
               <div class="kpi-sub">Task completion</div>
             </div>
-            <div class="kpi">
+            <div class="kpi fade-in-up" style="animation-delay:.07s">
               <div class="kpi-label">In Progress</div>
               <div class="kpi-val" x-text="stats.inprogress_tasks ?? 0"></div>
               <div class="kpi-sub">Active tasks</div>
             </div>
-            <div class="kpi">
+            <div class="kpi fade-in-up" style="animation-delay:.14s">
               <div class="kpi-label">Active Projects</div>
               <div class="kpi-val" x-text="stats.active_projects ?? 0"></div>
               <div class="kpi-sub" x-text="'of ' + (stats.total_projects??0) + ' total'"></div>
             </div>
           </div>
           <div class="chart-grid">
-            <div class="chart-card">
+            <div class="chart-card fade-in-left">
               <div class="chart-title">Task Breakdown</div>
               <canvas id="insightTaskChart" height="220"></canvas>
             </div>
-            <div class="chart-card">
+            <div class="chart-card fade-in-right">
               <div class="chart-title">Top Performing Employees</div>
               <template x-for="e in topEmployees" :key="e.name">
                 <div style="
@@ -1307,6 +1698,7 @@
           </div>
         </div>
       </div>
+      </template>
 
       <!-- ── BILLING TAB ── -->
       <template x-if="tab==='billing'">
@@ -1522,7 +1914,7 @@
       </template>
 
       <!-- ── CALENDAR TAB ── -->
-      <div x-show="tab==='calendar'">
+      <template x-if="tab==='calendar'"><div>
         <div class="section">
           <div class="section-head">
             <div class="cal-header" style="width:100%">
@@ -1574,6 +1966,7 @@
       </div>
 
     </div>
+      </template>
     <!-- /content -->
   </main>
 
